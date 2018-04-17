@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+  <!-- Custom styles for this template -->
+  <link href="./css/microgrid.css" rel="stylesheet">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Microgrid DApp</title>
+  </head>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+  <!-- JQuery will help us extract data from json files -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Web3.js will help us interact with the deployed smart contract -->
+  <script src="JShelpers/web3.min.js"></script>
+  <!-- Truffle contract  will our life easier when interacting with smart contracts -->
+  <script src="JShelpers/truffle-contract.js"></script>
+  <!-- app.js is where we will write our JS logic -->
+  <script src="app.js"></script>
+
+  <!-- onload="init_dashoard() -->
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Microgrid DApp</a>
+      <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+      <ul class="navbar-nav px-3">
+          <!-- <li class="nav-item text-nowrap">
+            <a class="nav-link" href="#">Sign out</a>
+          </li> -->
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="#">
+                <span data-feather="home"></span>
+                Dashboard <span class="sr-only">(current)</span>
+                </a>
+              </li>
+            </ul>
+                        <!-- <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="file"></span>
+                            Orders
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="shopping-cart"></span>
+                            Products
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="users"></span>
+                            Customers
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="bar-chart-2"></span>
+                            Reports
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="layers"></span>
+                            Integrations
+                          </a>
+                        </li> -->
+                      <!-- </ul> -->
+
+                      <!-- <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Saved reports</span>
+                        <a class="d-flex align-items-center text-muted" href="#">
+                          <span data-feather="plus-circle"></span>
+                        </a>
+                      </h6>
+                      <ul class="nav flex-column mb-2">
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="file-text"></span>
+                            Current month
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="file-text"></span>
+                            Last quarter
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="file-text"></span>
+                            Social engagement
+                          </a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">
+                            <span data-feather="file-text"></span>
+                            Year-end sale
+                          </a>
+                        </li>
+                      </ul> -->
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">Dashboard</h1>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+              <button class="btn btn-sm btn-outline-secondary">Share</button>
+              <button class="btn btn-sm btn-outline-secondary">Export</button>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
+              <span data-feather="calendar"></span>
+              View
+            </button>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h5>Total Supply:</h5><h5 id="totalSupplyNumber">xxxx Wh</h5>
+        </div>
+
+        <canvas class="my-4" id="myChart" width="900" height="380"></canvas>
+
+        <!-- <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom"></div> -->
+        <hr>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <div class="container-fluid">
+            <div class="row">
+              <!-- <div class="col-md-3"> -->
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-warning" onclick="registerMaristMetersOnBC()">Register Marist Buildings</button>
+                <span class="caret"></span>
+                <button type="button" class="btn btn-outline-dark" onclick="initMeterValues()">Initialize Smart Meters</button>
+              </div>
+              <!-- </div> -->
+              <hr class="invisible">
+              <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown">Data Profile
+                <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><button class="dropdown-item" type="button" onclick="setDataProfile(true, false)">Winter_Day</button></li>
+                  <li><button class="dropdown-item" type="button" onclick="setDataProfile(true, true)">Winter_Week</button></li>
+                  <li><button class="dropdown-item" type="button" onclick="setDataProfile(false, false)">Summer_Day</button></li>
+                  <li><button class="dropdown-item" type="button" onclick="setDataProfile(false, true)">Summer_Week</button></li>
+                </ul>
+              </div>
+              <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown">Threshold Profile
+                <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><button class="dropdown-item" type="button" onclick="setThresholdProfile(true)">Aggressive (2/3)</button></li>
+                  <li><button class="dropdown-item" type="button" onclick="setThresholdProfile(false)">Lenient (Avg)</button></li>
+                </ul>
+              </div>
+              <hr class="invisible">
+              <!-- <div class="col-md-4"></div> -->
+        
+              <!-- <div class="col-sm-1">  -->
+                <button type="button" class="btn btn-info" onclick="btnRunSimulation()">Run Simulation</button>
+              <!-- </div> -->
+          </div>
+        </div>
+      </div>
+
+        <h2>Grid Status</h2>
+        <div class="table-responsive">
+          <table class="table table-striped table-sm">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Building</th>
+                <th>Address</th>
+                <th>Threshold</th>
+                <th>Energy Generated</th>
+                <th>Energy Sold</th>
+                <th>Current Balance</th>
+                <th>Available</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>0</td>
+                <td>Gartland 1</td>
+                <td id="g1_address">0x00000</td>
+                <td id="g1_threshold">100000</td>
+                <td id="g1_generated">100000</td>
+                <td id="g1_sold">1000</td>
+                <td id="g1_balance">1131000</td>
+                <td id="g1_available">True</td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>Gartland 2</td>
+                <td id="g2_address">0x00000</td>
+                <td id="g2_threshold">100000</td>
+                <td id="g2_generated">100000</td>
+                <td id="g2_sold">1000</td>
+                <td id="g2_balance">1131000</td>
+                <td id="g2_available">True</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Fontaine</td>
+                <td id="fo_address">0x00000</td>
+                <td id="fo_threshold">100000</td>
+                <td id="fo_generated">100000</td>
+                <td id="fo_sold">1000</td>
+                <td id="fo_balance">1131000</td>
+                <td id="fo_available">True</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Foy 1</td>
+                <td id="f1_address">0x00000</td>
+                <td id="f1_threshold">100000</td>
+                <td id="f1_generated">100000</td>
+                <td id="f1_sold">1000</td>
+                <td id="f1_balance">1131000</td>
+                <td id="f1_available">True</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Foy 2</td>
+                <td id="f2_address">0x00000</td>
+                <td id="f2_threshold">100000</td>
+                <td id="f2_generated">100000</td>
+                <td id="f2_sold">1000</td>
+                <td id="f2_balance">1131000</td>
+                <td id="f2_available">True</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Foy 3</td>
+                <td id="f3_address">0x00000</td>
+                <td id="f3_threshold">100000</td>
+                <td id="f3_generated">100000</td>
+                <td id="f3_sold">1000</td>
+                <td id="f3_balance">1131000</td>
+                <td id="f3_available">True</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Dyson</td>
+                <td id="dy_address">0x00000</td>
+                <td id="dy_threshold">100000</td>
+                <td id="dy_generated">100000</td>
+                <td id="dy_sold">1000</td>
+                <td id="dy_balance">1131000</td>
+                <td id="dy_available">True</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>Lowell-Thomas</td>
+                <td id="lt_address">0x00000</td>
+                <td id="lt_threshold">100000</td>
+                <td id="lt_generated">100000</td>
+                <td id="lt_sold">1000</td>
+                <td id="lt_balance">1131000</td>
+                <td id="lt_available">True</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>Hancock</td>
+                <td id="ha_address">0x00000</td>
+                <td id="ha_threshold">100000</td>
+                <td id="ha_generated">100000</td>
+                <td id="ha_sold">1000</td>
+                <td id="ha_balance">1131000</td>
+                <td id="ha_available">True</td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>Library</td>
+                <td id="li_address">0x00000</td>
+                <td id="li_threshold">100000</td>
+                <td id="li_generated">100000</td>
+                <td id="li_sold">1000</td>
+                <td id="li_balance">1131000</td>
+                <td id="li_available">True</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </main>
+      </div>
+    </div>
+
+        <!-- <h1 class="text-center">Microgrid DApp</h1>
+        <hr/> -->
+
+        <!-- <div style="text-align: center;"> -->
+        <!-- <h3>Microgrid</h3> -->
+        <!-- <h3><span id="wrestler1"></span> <span style="color: red">VERSUS</span> <span id="wrestler2"></span></h3> -->
+
+        <!-- <button id="registerToFight" onclick="registerAsSecondWrestler()">REGISTER TO FIGHT</button> -->
+        <!-- </div> -->
+
+    <div>
+      <ul id="eventsList">
+          <!-- Events will appear here from app.js -->
+      </ul>
+    </div>
+      <!-- Graphs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script>
+      var ctx = document.getElementById("myChart");
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ["Gartland 1", "Gartland 2", "Fontaine", "Foy 1", "Foy 2", "Foy 3", "Dyson", "Lowell-Thomas", "Hancock", "Library"],
+          datasets: [{
+            data: [15339, 21345, 18483, 24003, 23489, 24092, 12034, 15000, 12500, 13000],
+            lineTension: 0,
+            backgroundColor: 'transparent',
+            borderColor: '#007bff',
+            borderWidth: 6,
+            pointBackgroundColor: '#007bff'
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          },
+          legend: {
+            display: false,
+          }
+        }
+      });
+    </script>
+  </body>
+  <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+  <script>
+    feather.replace()
+  </script>
+</html>
