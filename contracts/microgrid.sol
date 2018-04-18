@@ -17,7 +17,7 @@ contract microgrid {
         uint energy_sold;
         uint current_balance;
         bool available;
-        bool frozen;
+        // bool frozen;
     }
     
     // Logging events
@@ -32,7 +32,10 @@ contract microgrid {
     // address[] smartMeterList;
 
     mapping(uint => SmartMeter) public smartMeterList;
-    uint smartMeterLength = 0;
+    uint public smartMeterLength = 0;
+
+    uint public availableMetersCount = 0;
+    uint public belowThresholdCount = 0;
 
     // Register new smart meter address
     // TODO: allow parameter for meter pool
@@ -54,14 +57,16 @@ contract microgrid {
     function registerSmartMeter(uint meterNum, address meterAddress, uint threshold, string name) public {
         smartMeterList[meterNum].smart_meter_address = meterAddress;
         smartMeterList[meterNum].threshold = threshold;
+        smartMeterList[meterNum].name = name;
         smartMeterList[meterNum].energy_generated = 0;
         smartMeterList[meterNum].energy_sold = 0;
-        smartMeterList[meterNum].current_balance = 0;
+        smartMeterList[meterNum].current_balance = 100000;
         smartMeterList[meterNum].available = false;
-        smartMeterList[meterNum].frozen = false;
+        // smartMeterList[meterNum].frozen = false;
         smartMeterLength++;
 
-        emit SmartMeterRegistered(msg.sender);
+        emit SmartMeterRegistered(meterAddress);
+        // emit SmartMeterRegistered(msg.sender);
     }
 
     // Producer actions
@@ -91,14 +96,47 @@ contract microgrid {
         }
     }
     
-    function updateSmartMeter(uint meterNum, uint energy_generated, uint energy_sold, uint current_balance) public {
+    function updateSmartMeter(uint meterNum, uint energy_generated, uint energy_sold, uint current_balance) internal {
         smartMeterList[meterNum].energy_generated = energy_generated;
         smartMeterList[meterNum].energy_sold = energy_sold;
         smartMeterList[meterNum].current_balance = current_balance;
         updateAvailable(meterNum);
 
-        emit SmartMeterUpdated(meter);
+        emit SmartMeterUpdated(smartMeterList[meterNum].smart_meter_address);
     }
+
+    function updateSmartMeterExt(uint meterNum, uint energy_generated, uint energy_consumed) public {
+        smartMeterList[meterNum].energy_generated = smartMeterList[meterNum].energy_generated + energy_generated;
+        smartMeterList[meterNum].current_balance = smartMeterList[meterNum].current_balance + energy_generated - energy_consumed;
+        updateAvailable(meterNum);
+
+        emit SmartMeterUpdated(smartMeterList[meterNum].smart_meter_address);
+    }
+
+    function updateSmartMeters(uint[] generation_updates, uint[] consumption_updates) public {
+        for (uint i = 0; i < smartMeterLength; i++){
+            updateSmartMeterExt(i, generation_updates[i], consumption_updates[i]);
+        }
+
+        syncMeters();
+    }
+
+    // function updateSmartMetersBatch(uint[][] updates) public {
+    //     uint[] memory generation_updates = new uint[](9);
+    //     uint[] memory consumption_updates = new uint[](9);
+
+    //     for (uint i = 0; i < updates.length; i++) {
+    //         for(uint x = 0; x < 10; x++) {
+    //             generation_updates[x] = updates[i][x];
+    //         }
+
+    //         for(uint y = 10; y < 20; y++) {
+    //             consumption_updates[(y-10)] = updates[i][y];
+    //         }
+
+    //         updateSmartMeters(generation_updates, consumption_updates);
+    //     }
+    // }
 
     // Set threshold
     // function setSmartMeterThreshold(uint threshold) public {
@@ -110,10 +148,16 @@ contract microgrid {
     // }
 
     function setSmartMeterThreshold(uint meterNum, uint threshold) public {
-        require(smartMeterList[meterNum].smart_meter_address == msg.sender);
+        // require(smartMeterList[meterNum].smart_meter_address == msg.sender);
         smartMeterList[meterNum].threshold = threshold;
 
         emit SmartMeterThresholdUpdated(msg.sender);
+    }
+
+    function setSmartMeterThresholdArray(uint[] thresholds) public {
+        for (uint i = 0; i < smartMeterLength; i++){
+            setSmartMeterThreshold(i, thresholds[i]);
+        }
     }
 
     // Buyer actions
@@ -205,12 +249,12 @@ contract microgrid {
     //     // Go to next in belowThreshold list if success
     // }
 
-    function syncMeters() public {
+    function syncMeters() internal {
+        availableMetersCount = 0;
+        belowThresholdCount = 0;
+
         uint[] memory availableMeters = new uint[](smartMeterLength);
         uint[] memory belowThreshold = new uint[](smartMeterLength);
-        
-        uint availableMetersCount = 0;
-        uint belowThresholdCount = 0;
 
         for (uint i = 0; i < smartMeterLength; i++){
             if(smartMeterList[i].available){
@@ -240,33 +284,121 @@ contract microgrid {
         // Go to next in belowThreshold list if success
     }
 
-    function getMeterAddress(uint meterNum) public returns(address) {
+    // Combined input and sync call
+    function inputAndSync(uint[] generation_updates, uint[] consumption_updates) public {
+        updateSmartMeters(generation_updates, consumption_updates);
+    }
+
+    function getSmartMeter(uint meterNum) view public returns(uint a, address b, uint c, string d, uint e, uint f, uint g, bool h) {
+        SmartMeter memory r = smartMeterList[meterNum];
+        
+        a = r.id;
+        b = r.smart_meter_address;
+        c = r.threshold;
+        d = r.name;
+        e = r.energy_generated;
+        f = r.energy_sold;
+        g = r.current_balance;
+        h = r.available;
+    }
+
+    function getMeterAddress(uint meterNum) view public returns(address) {
         return smartMeterList[meterNum].smart_meter_address;
     }
+
+    // function getMeterAddresses(uint meterNum) view public returns(address[]) {
+    //     address[] memory r;
+
+    //     for(uint i = 0; i < smartMeterLength; i++) {
+    //         r.push(smartMeterList[meterNum].smart_meter_address);
+    //     }
+
+    //     return r;
+    // }
     
-    function getThreshold(uint meterNum) public returns(uint) {
+    function getThreshold(uint meterNum) view public returns(uint) {
         return smartMeterList[meterNum].threshold;
     }
 
-    function getName(uint meterNum) public returns(string) {
+    // function getThresholds(uint meterNum) view public returns(uint[]) {
+    //     uint[] memory r;
+
+    //     for(uint i = 0; i < smartMeterLength; i++) {
+    //         r.push(smartMeterList[meterNum].threshold);
+    //     }
+
+    //     return r;
+    // }
+
+    function getName(uint meterNum) view public returns(string) {
         return smartMeterList[meterNum].name;
     }
 
-    function getEnergyGenerated(uint meterNum) public return(uint) {
+    // function getNames(uint meterNum) view public returns(string[]) {
+    //     string[] memory r;
+
+    //     for(uint i = 0; i < smartMeterLength; i++) {
+    //         r.push(smartMeterList[meterNum].name);
+    //     }
+
+    //     return r;
+    // }
+
+    function getEnergyGenerated(uint meterNum) view public returns(uint) {
         return smartMeterList[meterNum].energy_generated;
     }
 
-    function getEnergySold(uint meterNum) public return(uint){
+    // function getEnergiesGenerated(uint meterNum) view public returns(uint[]) {
+    //     uint[] memory r;
+
+    //     for(uint i = 0; i < smartMeterLength; i++) {
+    //         r.push(smartMeterList[meterNum].energy_generated);
+    //     }
+
+    //     return r;
+    // }
+
+    function getEnergySold(uint meterNum) view public returns(uint) {
         return smartMeterList[meterNum].energy_sold;
     }
 
-    function getCurrentBalance(uint meterNum) public return(uint){
+    // function getEnergiesSold(uint meterNum) view public returns(uint[]) {
+    //     uint[] memory r;
+
+    //     for(uint i = 0; i < smartMeterLength; i++) {
+    //         r.push(smartMeterList[meterNum].energy_sold);
+    //     }
+
+    //     return r;
+    // }
+
+    function getCurrentBalance(uint meterNum) view public returns(uint) {
         return smartMeterList[meterNum].current_balance;
     }
 
-    function getAvailable(uint meterNum) public return(bool){
+    // function getCurrentBalances(uint meterNum) view public returns(uint[]) {
+    //     uint[] memory r;
+
+    //     for(uint i = 0; i < smartMeterLength; i++) {
+    //         r.push(smartMeterList[meterNum].current_balance);
+    //     }
+
+    //     return r;
+    // }
+
+    function getAvailable(uint meterNum) view public returns(bool) {
         return smartMeterList[meterNum].available;
     }
+
+    // function getAvailables(uint meterNum) view public returns(bool[]) {
+    //     bool[] memory r;
+
+    //     for(uint i = 0; i < smartMeterLength; i++) {
+    //         r.push(smartMeterList[meterNum].available);
+    //     }
+
+    //     return r;
+    // }
 
     // Internal function to check if user exists
     // function checkExists(address sender) view internal returns (bool){

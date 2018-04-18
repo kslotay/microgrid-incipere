@@ -1,17 +1,19 @@
 var web3Provider = null;
-var WrestlingContract;
+var MicrogridContract;
 const nullAddress = "0x0000000000000000000000000000000000000000";
-var csv = require('csv');
+// var csv = require('../node_modules/csv');
 
-var obj = csv();
+// var obj = csv();
 
 var smartMeterList = [];
 var smartMeterListStates = [];
 
 // Objects
-function smartMeter(smart_meter_address, threshold, name, energy_generated, energy_sold, current_balance, available){
+function smartMeter(id, smart_meter_address, threshold, name, energy_generated, energy_sold, current_balance, available){
+  this.id = id
   this.smart_meter_address = smart_meter_address;
   this.threshold = threshold;
+  this.name = name;
   this.energy_generated = energy_generated;
   this.energy_sold = energy_sold;
   this.current_balance = current_balance;
@@ -23,8 +25,8 @@ var testInput = [[333492.4, 333492.4, 333492.4, 200095.4, 200095.4, 200095.4, 46
                 [274681.9,	274681.9,	274681.9,	164809.2,	164809.2,	164809.2,	384554.7,	402866.8,	341826.4,	463907.3,	53018.04375,	53018.04,	53018.04,	31810.83,	31810.83,	31810.83,	74225.26,	77759.8,	65978.01,	89541.59],
                 [137219.2,	137219.2,	137219.2,	82331.52,	82331.52,	82331.52,	192106.9,	201254.8,	170761.7,	231748,	46830.65625,	46830.66,	46830.66,	28098.39,	28098.39,	28098.39,	65562.92,	68684.96,	58278.15,	79091.78],
                 [7371.944,	7371.944,	7371.944,	4423.166,	4423.166,	4423.166,	10320.72,	10812.18,	9173.974,	12450.39,	47457.9,	47457.9,	47457.9,	28474.74,	28474.74,	28474.74,	66441.06,	69604.92,	59058.72,	80151.12],
-                [0.1284,	0.1284,	0.1284,	0.077,	0.077, 0.077,	0.1797,	0.1883,	0.1598,	0.2168,	60523.70625,	60523.71,	60523.71,	36314.22,	36314.22,	36314.22,	84733.19,	88768.1,	75318.39,	102217.8]]
-                // [0,	0, 0,	0,	0,	0,	0	0	0	0	71569.575	71569.58	71569.58	42941.75	42941.75	42941.75	100197.4	104968.7	89064.36	120873.1],
+                [0.1284,	0.1284,	0.1284,	0.077,	0.077, 0.077,	0.1797,	0.1883,	0.1598,	0.2168,	60523.70625,	60523.71,	60523.71,	36314.22,	36314.22,	36314.22,	84733.19,	88768.1,	75318.39,	102217.8],
+                [0,	0, 0,	0,	0,	0,	0,	0,	0,	0,	71569.575,	71569.58,	71569.58,	42941.75,	42941.75,	42941.75,	100197.4,	104968.7,	89064.36,	120873.1]];
                 // [0,	0, 0,	0,	0,	0,	0	0	0	0	73865.925	73865.93	73865.93	44319.56	44319.56	44319.56	103412.3	108336.7	91922.04	124751.3],
                 // [0,	0, 0,	0,	0,	0,	0	0	0	0	61820.71875	61820.72	61820.72	37092.43	37092.43	37092.43	86549.01	90670.39	76932.45	104408.3],
                 // [0,	0, 0,	0,	0,	0,	0	0	0	0	53889.80625	53889.81	53889.81	32333.88	32333.88	32333.88	75445.73	79038.38	67062.87	91013.9],
@@ -36,9 +38,6 @@ var testInput = [[333492.4, 333492.4, 333492.4, 200095.4, 200095.4, 200095.4, 46
                 // [0,	0, 0,	0,	0,	0,	0	0	0	0	16350.8625	16350.86	16350.86	9810.518	9810.518	9810.518	22891.21	23981.27	20347.74	27614.79],
                 // [0,	0, 0,	0,	0,	0,	0	0	0	0	17360.83125	17360.83	17360.83	10416.5	10416.5	10416.5	24305.16	25462.55	21604.59	29320.52],
                 // [0,	0, 0,	0,	0,	0,	0	0	0	0	27035.26875	27035.27	27035.27	16221.16	16221.16	16221.16	37849.38	39651.73	33643.89	45659.57]];
-
-// Name parameters
-var names = ["Gartland 1", "Gartland 2", "Fontaine", "Foy 1", "Foy 2", "Foy 3", "Dyson", "Lowell-Thomas", "Hancock", "Library"];
 
 // Threshold Profiles
 var winter_avg_thresholds = [46452, 46452, 46452, 27871, 27871, 27871, 65033, 68130, 57807, 78453];
@@ -57,12 +56,14 @@ var csv_paths = ["../data_profiles/winter_day.csv", "../data_profiles/winter_wee
 var totalSupply = 0;
 
 function init() {
+  console.log("init");
   // We init web3 so we have access to the blockchain
   initWeb3();
   // registerMaristMetersOnBC();
 }
 
 function initWeb3() {
+  console.log("initWeb3");
   if (typeof web3 !== 'undefined' && typeof web3.currentProvider !== 'undefined') {
     web3Provider = web3.currentProvider;
     web3 = new Web3(web3Provider);
@@ -70,12 +71,13 @@ function initWeb3() {
     console.error('No web3 provider found. Please install Metamask on your browser.');
     alert('No web3 provider found. Please install Metamask on your browser.');
   }
-  
+
   // we init The Microgrid contract infos so we can interact with it
   initMicrogridContract();
 }
 
 function initMicrogridContract() {
+  console.log("initialize contract");
   $.getJSON('microgrid.json', function(data) {
     // Get the necessary contract artifact file and instantiate it with truffle-contract
     MicrogridContract = TruffleContract(data);
@@ -84,7 +86,9 @@ function initMicrogridContract() {
     MicrogridContract.setProvider(web3Provider);
 
     // listen to the events emitted by our smart contract
-    getEvents ();
+    getEvents();
+
+    console.log(MicrogridContract);
 
     // We'll retrieve the Wrestlers addresses set in our contract using Web3.js
     // getFirstWrestlerAddress();
@@ -148,20 +152,18 @@ function getCSV(){
 // Write smartMeterListStates to csv
 
 // Run single cycle
-function runCycle(energy_generated, energy_consumed) {
-  for (i = 0; i < smartMeterList.length; i++){
-    // var energy_sold = meterList[i]["energy_sold"];
+function runCycle(generation_updates, consumption_updates) {
+  updateMetersBC(generation_updates, consumption_updates);
+  // updateMetersBC
 
-    updateMeterBC(i, (smartMeterList[i]["energy_generated"] + energy_generated[i]), smartMeterList[i]["energy_sold"], (smartMeterList[i]["current_balance"] + energy_generated[i] - energy_consumed[i]));
-  }
+  // Combined update and sync on contract - reduction in number of API calls
+  // MicrogridContract.deployed().then(function(instance) {
+  //   instance.syncMeters();
+  // }).catch(function(err) {
+  //   console.log(err.message);
+  // });
 
-  MicrogridContract.deployed().then(function(instance) {
-    instance.syncMeters();
-  }).catch(function(err) {
-    console.log(err.message);
-  });
-
-  updateMeterListFromBC();
+  refreshData();
 }
 
 function btnRunSimulation(){
@@ -175,7 +177,7 @@ function runCycles(input){
   var generationUpdates = [];
   var consumptionUpdates = [];
 
-  setTimeout(function_x(), timeoutInMilliseconds); 
+  // setTimeout(function_x(), timeoutInMilliseconds);
 
   for (i = 0; i < input.length; i++){
     generationUpdates = [];
@@ -185,7 +187,7 @@ function runCycles(input){
       generationUpdates.push(input[i][x]);
     }
 
-    for (y = 9; y < 20; y++){
+    for (y = 10; y < 20; y++){
       consumptionUpdates.push(input[i][y])
     }
 
@@ -202,92 +204,259 @@ function runCycles(input){
 function retreiveMetersFromBC(){
   smartMeterList = [];
   
-  var grid_size = MicrogridContract.deployed().then(function(instance) {
-    return instance.smartMeterLength();
+  var grid_size = 9;
+  // var grid_size = MicrogridContract.deployed().then(function(instance) {
+  //   return instance.smartMeterLength.call();
+  // }).catch(function(err) {
+  //   console.log(err.message);
+  // });
+
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(0);
+    return instance.getSmartMeter.call(0);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
   }).catch(function(err) {
     console.log(err.message);
   });
 
-  for (i = 0; i <= grid_size; i++){
-    var smart_meter_address = MicrogridContract.deployed().then(function(instance) {
-      return instance.getMeterAddress.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
-    
-    var threshold = MicrogridContract.deployed().then(function(instance) {
-      return instance.getThreshold.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(1);
+    return instance.getSmartMeter.call(1);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    var name = MicrogridContract.deployed().then(function(instance) {
-      return instance.getName.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(2);
+    return instance.getSmartMeter.call(2);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    var energy_generated = MicrogridContract.deployed().then(function(instance) {
-      return instance.getEnergyGenerated.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(3);
+    return instance.getSmartMeter.call(3);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    var energy_sold = MicrogridContract.deployed().then(function(instance) {
-      return instance.getEnergySold.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(4);
+    return instance.getSmartMeter.call(4);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    var current_balance = MicrogridContract.deployed().then(function(instance) {
-      return instance.getCurrentBalance.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(5);
+    return instance.getSmartMeter.call(5);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    var available = MicrogridContract.deployed().then(function(instance) {
-      return instance.getAvailable.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(6);
+    return instance.getSmartMeter.call(6);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    smartMeterList.push(new smartMeter(smart_meter_address, threshold, name, energy_generated, energy_sold, current_balance, available));
-  }
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(7);
+    return instance.getSmartMeter.call(7);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(8);
+    return instance.getSmartMeter.call(8);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+
+  MicrogridContract.deployed().then(function(instance) {
+    console.log(9);
+    return instance.getSmartMeter.call(9);
+  }).then(function(result) {
+    console.log(result);
+    smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+
+  // for (index = 0; index <= grid_size; index++) {
+  //   MicrogridContract.deployed().then(function(instance) {
+  //     console.log(index);
+  //     return instance.getSmartMeter.call(index);
+  //   }).then(function(result) {
+  //     console.log(result);
+  //     smartMeterList.push(new smartMeter(result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]));
+  //   }).catch(function(err) {
+  //     console.log(err.message);
+  //   });
+  // }
 }
 
 // Used for subsequent updates after smartmeter details have been retreived intially
 function updateMeterListFromBC(){
-  var grid_size = smartMeterList.length;
+  // var grid_size = smartMeterList.length;
 
-  for (i = 0; i < grid_size; i++){
-    smartMeterList[i]["energy_generated"] = MicrogridContract.deployed().then(function(instance) {
-      return instance.getEnergyGenerated.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(0);
+  }).then(function(result) {
+    smartMeterList[0]["threshold"] = result[2];
+    smartMeterList[0]["energy_generated"] = result[4];
+    smartMeterList[0]["energy_sold"] = result[5];
+    smartMeterList[0]["current_balance"] = result[6];
+    smartMeterList[0]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    smartMeterList[i]["energy_sold"] = MicrogridContract.deployed().then(function(instance) {
-      return instance.getEnergySold.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(1);
+  }).then(function(result) {
+    smartMeterList[1]["threshold"] = result[2];
+    smartMeterList[1]["energy_generated"] = result[4];
+    smartMeterList[1]["energy_sold"] = result[5];
+    smartMeterList[1]["current_balance"] = result[6];
+    smartMeterList[1]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    smartMeterList[i]["current_balance"] = MicrogridContract.deployed().then(function(instance) {
-      return instance.getCurrentBalance.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(2);
+  }).then(function(result) {
+    smartMeterList[2]["threshold"] = result[2];
+    smartMeterList[2]["energy_generated"] = result[4];
+    smartMeterList[2]["energy_sold"] = result[5];
+    smartMeterList[2]["current_balance"] = result[6];
+    smartMeterList[2]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-    smartMeterList[i]["available"] = MicrogridContract.deployed().then(function(instance) {
-      return instance.getAvailable.call(i);
-    }).catch(function(err) {
-      console.log(err.message);
-    });
-  }
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(3);
+  }).then(function(result) {
+    smartMeterList[3]["threshold"] = result[2];
+    smartMeterList[3]["energy_generated"] = result[4];
+    smartMeterList[3]["energy_sold"] = result[5];
+    smartMeterList[3]["current_balance"] = result[6];
+    smartMeterList[3]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 
-  updateTotalSupply();
-  refreshTableData();
-  refreshChartData();
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(4);
+  }).then(function(result) {
+    smartMeterList[4]["threshold"] = result[2];
+    smartMeterList[4]["energy_generated"] = result[4];
+    smartMeterList[4]["energy_sold"] = result[5];
+    smartMeterList[4]["current_balance"] = result[6];
+    smartMeterList[4]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(5);
+  }).then(function(result) {
+    smartMeterList[5]["threshold"] = result[2];
+    smartMeterList[5]["energy_generated"] = result[4];
+    smartMeterList[5]["energy_sold"] = result[5];
+    smartMeterList[5]["current_balance"] = result[6];
+    smartMeterList[5]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(6);
+  }).then(function(result) {
+    smartMeterList[6]["threshold"] = result[2];
+    smartMeterList[6]["energy_generated"] = result[4];
+    smartMeterList[6]["energy_sold"] = result[5];
+    smartMeterList[6]["current_balance"] = result[6];
+    smartMeterList[6]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(7);
+  }).then(function(result) {
+    smartMeterList[7]["threshold"] = result[2];
+    smartMeterList[7]["energy_generated"] = result[4];
+    smartMeterList[7]["energy_sold"] = result[5];
+    smartMeterList[7]["current_balance"] = result[6];
+    smartMeterList[7]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(8);
+  }).then(function(result) {
+    smartMeterList[8]["threshold"] = result[2];
+    smartMeterList[8]["energy_generated"] = result[4];
+    smartMeterList[8]["energy_sold"] = result[5];
+    smartMeterList[8]["current_balance"] = result[6];
+    smartMeterList[8]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+
+  MicrogridContract.deployed().then(function(instance) {
+    return instance.getSmartMeter.call(9);
+  }).then(function(result) {
+    smartMeterList[9]["threshold"] = result[2];
+    smartMeterList[9]["energy_generated"] = result[4];
+    smartMeterList[9]["energy_sold"] = result[5];
+    smartMeterList[9]["current_balance"] = result[6];
+    smartMeterList[9]["available"] = result[7];
+    console.log(result);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 }
 
 // function pushMeterListToBC(){
@@ -296,17 +465,41 @@ function updateMeterListFromBC(){
 //   }
 // }
 function initMeterValues(){
-  for(i = 0; i < smartMeterList; i++){
-    updateMeterBC(i, 0, 0, 100000);
-  }
+  retreiveMetersFromBC();
+  console.log(smartMeterList);
+  
+  // for(i = 0; i < smartMeterList.length; i++){
+  //   updateMeterBC(i, 0, 0, 100000);
+  //   console.log("round " + i);
+  // }
 
+  // refreshData();
+  // updateMeterListFromBC();
+}
+
+function refreshData(){
   updateMeterListFromBC();
+
+  console.log(smartMeterList);
+
+  refreshTableData();
+  refreshChartData();
+  updateTotalSupply();
 }
 
 // Update Meter object on blockchain
-function updateMeterBC(meter_num, energy_generated, energy_sold, current_balance){
+function updateMeterBC(meter_num, energy_generated, current_balance){
   MicrogridContract.deployed().then(function(instance) {
-    instance.updateSmartMeter(meter_num, energy_generated, energy_sold, current_balance);
+    instance.updateSmartMeter(meter_num, energy_generated, current_balance);
+  }).catch(function(err) {
+    console.log(err.message);
+  });
+}
+
+// Update with array
+function updateMetersBC(generation_updates, consumption_updates){
+  MicrogridContract.deployed().then(function(instance) {
+    instance.inputAndSync(generation_updates, consumption_updates);
   }).catch(function(err) {
     console.log(err.message);
   });
@@ -320,96 +513,45 @@ function updateMeterBC(meter_num, energy_generated, energy_sold, current_balance
 
 // Intial address/smartmeter regsitration on Blockchain
 function registerMaristMetersOnBC(){
-  if(isWinter){
-    if(aggressive){
-      for(i = 0; i < names.length; i++){
-        MicrogridContract.deployed().then(function(instance) {
-          instance.registerSmartMeter(i, web3.eth.accounts[i], winter_twothirds_tresholds[i], names[i]);
-        }).catch(function(err) {
-          console.log(err.message);
-        });
-      }  
-    }
-    else{
-      for(i = 0; i < names.length; i++){
-        MicrogridContract.deployed().then(function(instance) {
-          instance.registerSmartMeter(i, web3.eth.accounts[i], winter_avg_thresholds[i], names[i]);
-        }).catch(function(err) {
-          console.log(err.message);
-        });
-      }
-    }
-  }
-  else{
-    if(aggressive){
-      for(i = 0; i < names.length; i++){
-        MicrogridContract.deployed().then(function(instance) {
-          instance.registerSmartMeter(i, web3.eth.accounts[i], summer_twothirds_tresholds[i], names[i]);
-        }).catch(function(err) {
-          console.log(err.message);
-        });
-      }  
-    }
-    else{
-      for(i = 0; i < names.length; i++){
-        MicrogridContract.deployed().then(function(instance) {
-          instance.registerSmartMeter(i, web3.eth.accounts[i], summer_avg_thresholds[i], names[i]);
-        }).catch(function(err) {
-          console.log(err.message);
-        });
-      }
-    }
-  }
-
-  retreiveMetersFromBC();
-  refreshTableData();
-  refreshChartData();
+  var names = ["Gartland 1", "Gartland 2", "Fontaine", "Foy 1", "Foy 2", "Foy 3", "Dyson", "Lowell-Thomas", "Hancock", "Library"];
+  for(i = 0; i < names.length; i++){
+    MicrogridContract.deployed().then(function(instance) {
+      instance.registerSmartMeter(i, web3.eth.accounts[i], winter_twothirds_tresholds[i], names[i]);
+    }).catch(function(err) {
+      console.log(err.message);
+    });
+  }  
 }
 
 // Run on threshold profile selected - update thresholds on Blockchain
 function updateThresholdsProfile(){
   if(isWinter){
     if(aggressive){
-      for(i = 0; i < names.length; i++){
-        MicrogridContract.deployed().then(function(instance) {
-          instance.setSmartMeterThreshold(i, winter_twothirds_tresholds[i], names[i]);
-        }).catch(function(err) {
-          console.log(err.message);
-        });
-      }
+      setSmartMeterThresholds(winter_twothirds_tresholds);
     }
     else{
-      for(i = 0; i < names.length; i++){
-        MicrogridContract.deployed().then(function(instance) {
-          instance.setSmartMeterThreshold(i, winter_avg_thresholds[i], names[i]);
-        }).catch(function(err) {
-          console.log(err.message);
-        });
-      }
+      setSmartMeterThresholds(winter_avg_thresholds);
     }
   }
   else{
     if(aggressive){
-      for(i = 0; i < names.length; i++){
-        MicrogridContract.deployed().then(function(instance) {
-          instance.setSmartMeterThreshold(i, summer_twothirds_thresholds[i], names[i]);
-        }).catch(function(err) {
-          console.log(err.message);
-        });
-      }
+      setSmartMeterThresholds(summer_twothirds_thresholds);
     }
     else{
-      for(i = 0; i < names.length; i++){
-        MicrogridContract.deployed().then(function(instance) {
-          instance.setSmartMeterThreshold(i, summer_avg_thresholds[i], names[i]);
-        }).catch(function(err) {
-          console.log(err.message);
-        });
-      }
+      setSmartMeterThresholds(summer_avg_thresholds);
     }
   }
+}
 
-  updateMeterListFromBC();
+// Update smart meter thresholds on Blockchain
+function setSmartMeterThresholds(thresholds){
+  MicrogridContract.deployed().then(function(instance) {
+    instance.setSmartMeterThresholdArray(thresholds);
+  }).then(function(result) {
+    // refreshData();
+  }).catch(function(err) {
+    console.log(err.message);
+  });
 }
 
 // Update total supply variable and page total supply
@@ -417,7 +559,8 @@ function updateTotalSupply(){
   totalSupply = 0;
   
   for(i = 0; i < smartMeterList.length; i++){
-    totalSupply += smartMeterList[i].current_balance;
+    totalSupply = new Number(smartMeterList[i].current_balance) + totalSupply;
+    console.log(totalSupply);
   }
 
   document.getElementById('totalSupplyNumber').innerHTML = totalSupply + " Wh";
@@ -474,7 +617,7 @@ function refreshChartData(){
     removeChartData(myChart);
   }
   for(x = 0; x < smartMeterList.length; x++){
-    addChartData(myChart, names[x], smartMeterList[x].current_balance);
+    addChartData(myChart, smartMeterList[x].name, smartMeterList[x].current_balance);
   }
 }
 

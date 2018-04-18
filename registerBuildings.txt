@@ -1,0 +1,30 @@
+account0 = web3.eth.accounts[0]
+account1 = web3.eth.accounts[1]
+account2 = web3.eth.accounts[2]
+account3 = web3.eth.accounts[3]
+account4 = web3.eth.accounts[4]
+account5 = web3.eth.accounts[5]
+account6 = web3.eth.accounts[6]
+account7 = web3.eth.accounts[7]
+account8 = web3.eth.accounts[8]
+account9 = web3.eth.accounts[9]
+microgrid.deployed().then(inst => { microgridinst = inst })
+
+
+microgridinst.registerSmartMeter(0, account0, 46452, "Gartland 1")
+microgridinst.registerSmartMeter(1, account1, 46452, "Gartland 2")
+microgridinst.registerSmartMeter(2, account2, 46452, "Fontaine")
+microgridinst.registerSmartMeter(3, account3, 27871, "Foy 1")
+microgridinst.registerSmartMeter(4, account4, 27871, "Foy 2")
+microgridinst.registerSmartMeter(5, account5, 27871, "Foy 3")
+microgridinst.registerSmartMeter(6, account6, 65033, "Dyson")
+microgridinst.registerSmartMeter(7, account7, 68130, "Lowell-Thomas")
+microgridinst.registerSmartMeter(8, account8, 57807, "Hancock")
+microgridinst.registerSmartMeter(9, account9, 78453, "Library")
+
+microgridinst.getSmartMeter(9)
+
+microgridinst.setSmartMeterThresholdArray([60208, 60208, 60208, 36124, 36124, 36124, 84291, 88305, 74925, 101685])
+
+microgridinst.updateSmartMeters([333492.4, 333492.4, 333492.4, 200095.4, 200095.4, 200095.4, 466889.4, 489122.2, 415012.8, 563231.6], [82190.19375, 82190.19, 82190.19,	49314.12, 49314.12,	49314.12, 115066.3, 120545.6, 102281.1,	138810.1])
+microgridinst.updateSmartMeters([312132.8,	312132.8,	312132.8,	187279.7,	187279.7,	187279.7,	436985.9,	457794.7,	388431.9,	527157.6], [64818.73125,	64818.73,	64818.73,	38891.24,	38891.24,	38891.24,	90746.22,	95067.47,	80663.31,	109471.6])
