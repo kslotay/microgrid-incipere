@@ -224,7 +224,6 @@ function getEvents () {
 // Run single cycle
 function runCycle(generation_updates, consumption_updates) {
   updateMetersBC(generation_updates, consumption_updates);
-  // updateMetersBC
 
   // Combined update and sync on contract - reduction in number of API calls
   // MicrogridContract.deployed().then(function(instance) {
@@ -292,7 +291,7 @@ function runCycles(input){
 function retreiveMetersFromBC(){
   smartMeterList = [];
   
-  var grid_size = 9;
+  // var grid_size = 9;
   // var grid_size = MicrogridContract.deployed().then(function(instance) {
   //   return instance.smartMeterLength.call();
   // }).catch(function(err) {
@@ -399,6 +398,7 @@ function retreiveMetersFromBC(){
     console.log(err.message);
   });
 
+  // TODO: investigate why for loop does not work as intended, instead calling the same smart meter
   // for (index = 0; index <= grid_size; index++) {
   //   MicrogridContract.deployed().then(function(instance) {
   //     console.log(index);
@@ -545,13 +545,23 @@ function updateMeterListFromBC(){
   }).catch(function(err) {
     console.log(err.message);
   });
+
+  // for (i = 0; i < smartMeterList.length; i++){
+  //   MicrogridContract.deployed().then(function(instance) {
+  //     return instance.getSmartMeter.call(i);
+  //   }).then(function(result) {
+  //     smartMeterList[i]["threshold"] = result[2];
+  //     smartMeterList[i]["energy_generated"] = result[4];
+  //     smartMeterList[i]["energy_sold"] = result[5];
+  //     smartMeterList[i]["current_balance"] = result[6];
+  //     smartMeterList[i]["available"] = result[7];
+  //     console.log(result);
+  //   }).catch(function(err) {
+  //     console.log(err.message);
+  //   });
+  // }
 }
 
-// function pushMeterListToBC(){
-//   for (i = 0; i < meterList.length; i++){
-//     updateMeterBC(i, meterList[i].energy_generated, meterList[i].energy_sold, meterList[i].current_balance);
-//   }
-// }
 function initMeterValues(){
   retreiveMetersFromBC();
   console.log(smartMeterList);
@@ -584,7 +594,7 @@ function updateMeterBC(meter_num, energy_generated, current_balance){
   });
 }
 
-// Update with array
+// Update with generation and consumption update arrays
 function updateMetersBC(generation_updates, consumption_updates){
   MicrogridContract.deployed().then(function(instance) {
     instance.updateSmartMeters(generation_updates, consumption_updates);
@@ -592,12 +602,6 @@ function updateMetersBC(generation_updates, consumption_updates){
     console.log(err.message);
   });
 }
-
-// function updateMeterInMeterList(meter_num, energy_generated, energy_sold, current_balance){
-//   meterList[i].energy_generated = energy_generated;
-//   meterList[i].energy_sold = energy_sold;
-//   meterList[i].current_balance = current_balance;
-// }
 
 // Intial address/smartmeter regsitration on Blockchain
 function registerMaristMetersOnBC(){
@@ -798,52 +802,6 @@ function refreshTableData(){
   document.getElementById("li_balance").innerHTML = smartMeterList[9].current_balance;
   document.getElementById("li_available").innerHTML = smartMeterList[9].available;
 }
-
-// function getFirstWrestlerAddress() {
-//   WrestlingContract.deployed().then(function(instance) {
-//     return instance.wrestler1.call();
-//   }).then(function(result) {
-//     $("#wrestler1").text(result); // Using JQuery again, we will modify the html tag with id wrestler1 with the returned text from our call on the instance of the wrestling contract we deployed
-//   }).catch(function(err) {
-//     console.log(err.message);
-//   });
-// }
-
-// function getSecondWrestlerAddress() {
-//   WrestlingContract.deployed().then(function(instance) {
-//     return instance.wrestler2.call();
-//   }).then(function(result) {
-//     if(result != nullAddress) {
-//       $("#wrestler2").text(result);
-//       $("#registerToFight").remove(); // By clicking on the button with the ID registerToFight, a user can register as second wrestler, so we need to remove the button if a second wrestler is set 
-//     } else {
-//       $("#wrestler2").text("Undecided, you can register to wrestle in this event!");
-//     }   
-//   }).catch(function(err) {
-//     console.log(err.message);
-//   });
-// }
-
-// function registerAsSecondWrestler () {
-//   web3.eth.getAccounts(function(error, accounts) {
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     if(accounts.length <= 0) {
-//       alert("No account is unlocked, please authorize an account on Metamask.")
-//     } else {
-//       WrestlingContract.deployed().then(function(instance) {
-//         return instance.registerAsAnOpponent({from: accounts[0]});
-//       }).then(function(result) {
-//         console.log('Registered as an opponent')
-//         getSecondWrestlerAddress();
-//       }).catch(function(err) {
-//         console.log(err.message);
-//       });
-//     }
-//   }
-//   });
-// }
 
 // When the page loads, this will call the init() function
 $(function() {
