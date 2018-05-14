@@ -25,6 +25,7 @@ contract microgrid {
     event SmartMeterRegistered(address smart_meter_address);
     event SmartMeterUpdated(address smart_meter_address);
     event SmartMeterThresholdUpdated(address smart_meter_address);
+    event SmartMeterCapUpdated(address smart_meter_address);
     event SmartMeterSynced(address smart_meter_address);
     event EnergyTransferred(uint transferTo, uint transferFrom, int amount);
 
@@ -80,8 +81,17 @@ contract microgrid {
 
     // External update meter function
     function updateSmartMeterExt(uint meterNum, int energy_generated, int energy_consumed) public {
+        int new_balance = smartMeterList[meterNum].current_balance + energy_generated - energy_consumed;
+        
         smartMeterList[meterNum].energy_generated = smartMeterList[meterNum].energy_generated + energy_generated;
-        smartMeterList[meterNum].current_balance = smartMeterList[meterNum].current_balance + energy_generated - energy_consumed;
+        
+        if(new_balance < smartMeterList[meterNum].energy_cap) {
+            smartMeterList[meterNum].current_balance = new_balance;
+        }
+        else{
+            smartMeterList[meterNum].current_balance = smartMeterList[meterNum].energy_cap;
+        }
+
         updateAvailable(meterNum);
 
         emit SmartMeterUpdated(smartMeterList[meterNum].smart_meter_address);
@@ -111,6 +121,20 @@ contract microgrid {
         }
     }
 
+    // Update meter cap
+    function setSmartMeterCap(uint meterNum, int cap) public {
+        // require(smartMeterList[meterNum].smart_meter_address == msg.sender);
+        smartMeterList[meterNum].energy_cap = cap;
+
+        emit SmartMeterCapUpdated(smartMeterList[meterNum].smart_meter_address);
+    }
+
+    function setSmartMeterCapArray(int[] caps) public {
+        for (uint i = 0; i < smartMeterLength; i++){
+            setSmartMeterCap(i, caps[i]);
+        }
+    }
+
 
     // Meter sync functions
     // Transfer energy from one meter to another, internal function, called by transfer request function
@@ -135,9 +159,9 @@ contract microgrid {
                     return;
                 }
                 else {
-                    int newamount = cur_amount - difference;
+                    int newamount = cur_amount - (smartMeterList[meters[i]].current_balance - smartMeterList[meters[i]].threshold);
                     
-                    transferEnergy((cur_amount - difference), meterNum, meters[i]);
+                    transferEnergy((newamount), meterNum, meters[i]);
                     cur_amount = cur_amount - newamount;
                 }
             }
