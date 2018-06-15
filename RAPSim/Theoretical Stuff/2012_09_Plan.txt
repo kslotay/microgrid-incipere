@@ -1,0 +1,38 @@
+hier die Liste:
+
+wrong text in toolbar tip
+"add offer" for powerline?
+erazer (+cursor) instead of right click delete 
+right click for properties
+Overlay: add short caption ("Usage")
+Toolbar: mehrere an einer Seite übereinander/nebeneinander oder Detached starten
+Update properties life when opened
+add tooltip over houses with life data
+add stats on current wind/sun somewhere
+reduce debug messages (is there a debug level implemented)?
+demand: implement functions ("constant","random","series from file") + parameter (wie in FREVO: zahl, string, enum, file)
+properties: add units, zwischen Konfigurationsparametern und Info-Parametern (grau) unterscheiden, Beschreibung mit Bild und/oder Text
+powerline: add units, add "C", "R", "X" in properties, add image for Pi-Model
+SuperConductor -> IdealConductor, no properties
+
+hierarchie-modell mit Subgrid-Object und Connector
+Agorithmen elegant integrieren
+
+mark multiple objects (drap mouse, strg-click)
+move/delete marked objects together
+tooltip on marked groups: sum
+add properties from marked group 
+
+checkbox for add to life graph
+list of global statistics with checkboxes
+
+overlay: which object have same configuration
+different graphics/house colors: which object have consistent configuration
+
+usage message on _main_
+name of program
+
+
+Formulierung:
+statt "loosened up" besser das Wort "relaxed" in Zusammenhang mit dem etwas aufgeweichten MVC-Konzept verwenden.
+

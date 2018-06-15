@@ -1,0 +1,9 @@
+- Zoom mit Wheel -> Hinweis bei erstem Start
+- Keine Zoomänderung bei Resize
+- Helptext bei Objekten im Grid (??)
+- Line object placement (shortedt path)
+- Speed selector, Speedbar, Pause/Resume
+- Simulation output+warning
+- Zooming keys/options
+
+

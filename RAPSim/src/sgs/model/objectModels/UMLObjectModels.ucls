@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.8" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true">  
+  <class id="1" language="java" name="sgs.model.objectModels.ResidentialAverageLoadCurveModel" 
+    project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/ResidentialAverageLoadCurveModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="339" width="245" x="715" y="321"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="2" language="java" name="sgs.model.objectModels.AbstractSolarPowerPlantModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/AbstractSolarPowerPlantModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="67" width="225" x="1241" y="96"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" name="sgs.model.objectModels.RandomWindTurbineModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/RandomWindTurbineModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="179" width="202" x="1515" y="230"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="sgs.model.objectModels.AbstractFossilFuelPowerPlantModel" 
+    project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/AbstractFossilFuelPowerPlantModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="67" width="232" x="991" y="95"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="sgs.model.objectModels.AbstractCustomConsumerModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/AbstractCustomConsumerModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="824" y="127"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="sgs.model.objectModels.AbstractCustomPowerPlantModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/AbstractCustomPowerPlantModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="67" width="219" x="1741" y="100"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="7" language="java" name="sgs.model.objectModels.TimeSeriesModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/TimeSeriesModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="131" width="127" x="996" y="525"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="8" language="java" name="sgs.model.objectModels.ConstantDemandModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/ConstantDemandModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="99" width="244" x="715" y="209"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="sgs.model.objectModels.SolarSquareMeterModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/SolarSquareMeterModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="179" width="204" x="1261" y="449"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="sgs.model.objectModels.FossilFuelModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/FossilFuelModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="176" width="227" x="991" y="227"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="sgs.model.objectModels.AbstractConsumerModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/AbstractConsumerModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="820" y="-39"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="sgs.model.objectModels.AbstractWindPowerPlantModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/AbstractWindPowerPlantModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="67" width="236" x="1480" y="98"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="sgs.model.objectModels.AbstractModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/AbstractModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1214" y="-131"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="14" language="java" name="sgs.model.objectModels.AbstractPowerPlantModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/AbstractPowerPlantModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1616" y="-63"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="sgs.model.objectModels.ConstantPowerPlantModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/ConstantPowerPlantModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="123" width="219" x="1741" y="232"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="16" language="java" name="sgs.model.objectModels.SolarPeakPowerModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/SolarPeakPowerModel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="179" width="205" x="1263" y="230"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="17" language="java" name="sgs.model.objectModels.UsualWindTurbineModel" project="SmartGridSimulator" 
+    file="/SmartGridSimulator/src/sgs/model/objectModels/UsualWindTurbineModel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="163" width="204" x="1514" y="450"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <generalization id="18">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="6"/>  
+  </generalization>  
+  <generalization id="19">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="12"/>  
+  </generalization>  
+  <generalization id="20">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="4"/>  
+  </generalization>  
+  <generalization id="21">    
+    <bendpoint x="689" y="424"/>    
+    <bendpoint x="690" y="184"/>    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="5"/>  
+  </generalization>  
+  <generalization id="22">    
+    <bendpoint x="1244" y="443"/>    
+    <bendpoint x="1244" y="201"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="2"/>  
+  </generalization>  
+  <generalization id="23">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="14"/>  
+  </generalization>  
+  <generalization id="24">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="14"/>  
+  </generalization>  
+  <realization id="25">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="7"/>  
+  </realization>  
+  <generalization id="26">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="5"/>  
+  </generalization>  
+  <generalization id="27">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="11"/>  
+  </generalization>  
+  <generalization id="28">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="2"/>  
+  </generalization>  
+  <generalization id="29">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="14"/>  
+  </generalization>  
+  <generalization id="30">    
+    <bendpoint x="1491" y="437"/>    
+    <bendpoint x="1492" y="201"/>    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="12"/>  
+  </generalization>  
+  <generalization id="31">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="14"/>  
+  </generalization>  
+  <generalization id="32">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="13"/>  
+  </generalization>  
+  <generalization id="33">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="13"/>  
+  </generalization>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    sort-features="false" accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true" static="true"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

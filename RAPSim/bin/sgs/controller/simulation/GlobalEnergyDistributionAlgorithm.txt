@@ -1,0 +1,569 @@
+package sgs.controller.simulation;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+
+import main.StatKeeper;
+import org.apache.commons.math3.complex.Complex;
+
+import sgs.controller.ControllerConstants;
+import sgs.controller.GridController;
+//import sgs.controller.simulation.calculation.AdmittanceList;
+import sgs.controller.simulation.calculation.IterativeACVoltageCalculator;
+import sgs.controller.simulation.calculation.IterativeDCVoltageCalculator;
+import sgs.model.SgsGridModel;
+//import sgs.model.gridObjects.House;
+//import sgs.model.gridObjects.PowerPlant;
+import sgs.model.gridObjects.SmartGridObject;
+import sgs.model.simulation.Bus;
+import sgs.model.simulation.Path;
+import sgs.model.simulation.Bus.busTypes;
+import Jama.Matrix;
+
+
+/**
+ * Distributes and calculates the whole power in the system.
+ * 
+ * @author Lukas Felician Krasel (praktikant 4)
+ *
+ */
+
+public class GlobalEnergyDistributionAlgorithm extends
+		AbsElectricyDistributionAlgorithm {
+
+	GridController gridController;
+	SgsGridModel gridModel;
+
+	IterativeDCVoltageCalculator iDCVoltageCalculator;
+	IterativeACVoltageCalculator iACVoltageCalculator;
+
+	StatKeeper statKeeper;
+
+	// matrices & vectors
+	Matrix Y; // admittance
+//	Vector U; // voltage
+//	Vector P; // power
+
+	private static Complex DEFAULT_VALUE = new Complex(1.0, 0);
+
+	public GlobalEnergyDistributionAlgorithm(GridController gridController) {
+		this.gridController = gridController;
+		this.gridModel = gridController.getModel();
+
+		statKeeper = new StatKeeper();
+		iDCVoltageCalculator = new IterativeDCVoltageCalculator(this);
+		iACVoltageCalculator = new IterativeACVoltageCalculator(this);
+	}
+
+	@Override
+	public void init() {
+	}
+
+	@Override
+	public void Calc() {
+		
+//		boolean oldOn=true;
+//		 oldOn=false;
+				
+		System.out.println("Calc--------------------------------------------------------");
+
+		for (SmartGridObject o : gridModel.gridObjectList) {
+			o.resetCurrentPowerConsumption();
+		}
+
+		//int numberOfBuses = GlobalVariables.buses.size();
+		distributePathResistance();
+//		if (oldOn) distributePower();
+		
+		// sets bus types of the buses
+		for (Bus c : gridModel.buses) {
+			if ( c.getNettoPower().getReal() < 0 && c.getBusType() != busTypes.SWING_BUS) {
+				c.setBusType(busTypes.LOAD_BUS);
+			} else if (c.getNettoPower().getReal() >= 0
+					&& c.getBusType() != busTypes.SWING_BUS) {
+				c.setBusType(busTypes.GENERATOR_BUS);
+			}
+		}
+
+		// file manager & test cases
+		
+//		AdmittanceList admittanceList = new AdmittanceList();
+		LinkedList<Path> admittanceList;  
+		
+		// admittanceList.getValuesFromPaths();
+		// P = createPowerVector(numberOfBuses);
+		// Bus.busTypes[] busTypes = new Bus.busTypes[numberOfBuses];
+		
+			Bus.busTypes[] busTypes = new Bus.busTypes[ gridModel.buses.size() ];		
+			Complex[][] Yc ;
+			Complex[] Pc ;
+			Complex[] Uc ;	
+		
+//		if (oldOn) {
+	//		read in the file from the testcase
+			
+//			YPFileManager ypFM = new YPFileManager("testcase inet.csv", admittanceList);
+			
+			
+			// admittanceList.order();
+
+	
+			// Y = ypFM.getY();
+			// P = ypFM.getP();
+			// U = this.createDefaultVector(P.size());
+	
+			// ypFM.printData();
+	
+			// using the AC calculator
+//			busTypes = ypFM.getBusTypes();
+//			//double[] Q_v = new double[ypFM.size()];
+//			Yc = ypFM.getY();
+//			Pc = ypFM.getP();
+//			Uc = ypFM.getU();
+			
+//		} else {	
+						
+			Pc = getP() ;
+			Uc = getU() ; 
+			busTypes  = getBusType();		
+			
+			admittanceList =  gridModel.paths ;
+			Yc = createAdmittanceMatrix(admittanceList);			
+//			}
+		
+		
+		iACVoltageCalculator.setAdmittanceMatrix(Yc);
+		iACVoltageCalculator.setPowerVector(Pc);
+		iACVoltageCalculator.setVoltageVector(Uc);
+		iACVoltageCalculator.setBusTypes(busTypes);
+		
+		try {
+			iACVoltageCalculator.solve();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		setPowerToBus( iACVoltageCalculator.getPowerVector() );
+		setVoltageToBus( iACVoltageCalculator.getVoltageVector() );
+		
+		
+		// printVector("V new", iDCVoltageCalculator.getVoltageVector());
+		// printVector("P new", iDCVoltageCalculator.getPowerVector());
+
+		// using the DC calculator
+		// iDCVoltageCalculator.setAdmittanceMatrix(Y);
+		// iDCVoltageCalculator.setPowerVector(P);
+		// iDCVoltageCalculator.setVoltageVector(U);
+		// iDCVoltageCalculator.setBusTypes(busTypes);
+		// iDCVoltageCalculator.setIterations(100);
+		// try {
+		// iDCVoltageCalculator.solve();
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		// printVector("V new", iDCVoltageCalculator.getVoltageVector());
+		// printVector("P new", iDCVoltageCalculator.getPowerVector());
+
+		// performPowerFlowAnalysis();
+		// distribute busVoltage to the busObjects
+
+		// repaint
+		gridController.repaintData();
+		gridModel.jGridMap.paintBoard.repaint();
+	}
+
+	
+//	%%%%%%%%%%%%%%
+	
+	private Complex[][] createAdmittanceMatrix(LinkedList<Path> admittanceList) {
+
+			int numberOfBuses = gridModel.buses.size();
+			int numberOfPaths = admittanceList.size();
+			
+					
+			Complex[][] zz = new Complex[numberOfBuses][numberOfBuses]; // the
+																		// resistance
+																		// value
+																		// matrix
+			Complex[][] ych = new Complex[numberOfBuses][numberOfBuses]; // the line
+																			// charging
+																			// matrix
+			Complex[][] yb = new Complex[numberOfBuses][numberOfBuses]; // the Y
+																		// matrix
+
+			// creating ych
+			for (int i = 0; i < numberOfBuses; i++) {
+				for (int j = 0; j < numberOfBuses; j++) {
+					double v = 0.0;
+					int fromBus;
+					int toBus;
+					// getting lineCharging values from the list
+					for (int k = 0; k < numberOfPaths; k++) {
+						fromBus = admittanceList.get(k).getFirstBus().getNumber();
+						toBus = admittanceList.get(k).getSecondBus().getNumber();
+						if ( ( fromBus == i && toBus == j) || fromBus == j && toBus == i) {
+							v = admittanceList.get(k).getLineCharge();
+						}
+					}
+					ych[i][j] = new Complex(0, v);
+				}	
+			}
+			// creating zz
+			for (int i = 0; i < numberOfBuses; i++) {
+				for (int j = 0; j < numberOfBuses; j++) {
+					if (i == j) {
+						zz[i][j] = new Complex(0d, 0d);
+						continue;
+					}
+					zz[i][j] = getResistanceOfPath(i, j, admittanceList);
+				}
+			}
+			// creating yb
+			for (int i = 0; i < numberOfBuses; i++) {
+				for (int j = 0; j < numberOfBuses; j++) {
+					if (zz[i][j].equals(new Complex(0d, 0d))) {
+						yb[i][j] = new Complex(0d, 0d);
+					} else {
+						yb[i][j] = new Complex(-1.0, 0.0).divide(zz[i][j]);
+					}
+				}
+			}
+			// diagonal of yb
+			for (int i = 0; i < numberOfBuses; i++) {
+				Complex csum = new Complex(0, 0);
+				Complex ysum = new Complex(0, 0);
+				for (int j = 0; j < numberOfBuses; j++) {
+					ysum = ysum.add(yb[i][j]);
+					csum = csum.add(ych[i][j]);
+				}
+				yb[i][i] = csum.subtract(ysum);
+			}
+			return yb;
+		}
+	
+		
+
+	
+	
+	
+	private Complex getResistanceOfPath(int i, int j, LinkedList<Path> admittanceList) {
+
+		Complex d = new Complex(0, 0);
+		for (Path p : admittanceList){
+			int fromBus = p.getFirstBus().getNumber();
+			int toBus = p.getSecondBus().getNumber();
+			
+			if ( fromBus == i && toBus == j || fromBus == j && toBus == i ){
+				d = p.getResistance();
+			}
+		}
+		return d;
+	}
+
+	
+	private void setVoltageToBus(Complex[] voltageVector) {
+		int counter = 0;
+		for (Bus o : gridModel.buses){
+			if (voltageVector[counter] != null ){
+				o.setVoltage( voltageVector[counter] );
+				
+			}		
+			counter++;
+		}
+	
+	}
+
+	private void setPowerToBus(Complex[] powerVector) {
+		int counter = 0;
+		Complex temp = new Complex(0,0);
+		for (Bus o : gridModel.buses){
+			if (powerVector[counter] != null ){
+				temp = o.getNettoPower();
+//				temp = ;
+				o.addPower( powerVector[counter].add( temp.multiply(-1) ) );
+				
+			}		
+			counter++;
+		}
+		
+	}
+
+	private Bus.busTypes[] getBusType() {
+		
+		// busTypes
+		Bus.busTypes[] bT = new Bus.busTypes[gridModel.buses.size()];
+		
+		int counter = 0;
+		boolean isaSwingBus = false;
+		int firstGenBus = -1;
+				
+		for ( Bus b : gridModel.buses ){
+			bT[counter] =  b.getBusType();
+
+			if ( bT[counter].equals( Bus.busTypes.SWING_BUS ) ) {
+				isaSwingBus = true;
+			}
+			
+//			if ( firstGenBus==-1 && bT[counter].equals(Bus.busTypes.GENERATOR_BUS )) {
+			if ( firstGenBus==-1 && b.getNettoPower().getReal()==0 ) {  
+				firstGenBus = counter;
+			}
+			
+			counter++;
+		}
+		
+		
+		if ( !isaSwingBus && firstGenBus>-1) {
+			gridModel.buses.get(firstGenBus).setBusType(Bus.busTypes.SWING_BUS);
+			bT[firstGenBus] = Bus.busTypes.SWING_BUS ;
+		}
+		
+		return bT;
+	}
+	
+
+	// methods of
+	// calc----------------------------------------------------------------------------
+
+	private Complex[] getU() {
+		Complex[] uVector = new Complex[ gridModel.buses.size() ];
+		int counter = 0; 
+	
+		for ( Bus b : gridModel.buses ){
+			uVector[counter] =  b.getVoltage() ;
+			counter++;
+			
+		}
+		
+		return uVector;
+	}
+	// -----------------------------------
+
+	private Complex[] getP() {
+		Complex[] pVector = new Complex[ gridModel.buses.size() ];
+		int counter = 0; 
+	
+		for ( Bus b : gridModel.buses ){
+			pVector[counter] =  b.getNettoPower();
+			counter++;
+		}
+		
+		return pVector;
+	}
+
+	/**
+	 * This method distribute the power of the whole system. It doesn't uses the
+	 * admittance of the paths. These admittance should be used after this
+	 * methods Iterative**VoltageCalculator to calculate the voltage of the
+	 * clusters.
+	 */
+//	private void distributePower() {
+//		double unbalance = 0;
+//		double wholePowerDemand = 0;
+//		double wholePowerProduction = 0; // becomes negative
+//		double wholeUsedPower = 0;
+//
+//		// calc netto power in buses
+//		for (Bus b : gridModel.buses) {
+//			b.calcNettoPower();
+//			wholePowerProduction += b.getPowerGeneration().getReal();
+//			wholePowerDemand += b.getPowerRequirement().getReal();
+//		}
+//
+//		// unbalance
+//		unbalance =  wholePowerProduction - wholePowerDemand;
+//		statKeeper.add(unbalance);
+//		if (unbalance < 0) {
+//			System.err.println("Energy shortage in the whole system! ");
+//		}
+//
+//		wholeUsedPower = wholePowerDemand;
+//		if (unbalance < 0) {
+//			wholeUsedPower += unbalance;
+//		}
+//
+//		System.out.println("wPD: " + wholePowerDemand + " wPP: "
+//				+ wholePowerProduction + " wUP: " + wholeUsedPower + " u: "
+//				+ unbalance);
+//	
+//		double tmpD = wholeUsedPower;
+//		double tmpU = -wholeUsedPower;
+//		for (Bus c : gridModel.buses) {
+//			for (SmartGridObject o : c.getObjects()) {
+//				if (o instanceof House) {
+//					if (tmpD - o.getPowerDemand().getReal() > 0) {
+//						o.setCurrentPowerConsumption(o.getPowerDemand().getReal());
+//						tmpD -= o.getPowerDemand().getReal();
+//					} else {
+//						o.setCurrentPowerConsumption(tmpD);
+//						tmpD = 0;
+//					}
+//				} else if (o instanceof PowerPlant) {		//TODO: COmplex
+//					if (tmpU + o.getPowerProduction().getReal() <= 0) {
+//						o.setCurrentPowerConsumption(0);
+//						tmpU += o.getPowerProduction().getReal();
+//					} else {
+//						o.setCurrentPowerConsumption(o.getPowerProduction().getReal()
+//								+ tmpU);
+//						tmpU = 0;
+//					}
+//				}
+//			}
+//		}
+//	}
+
+	/**
+	 * sets the resistance in the paths
+	 */
+	private void distributePathResistance() {
+		for (sgs.model.simulation.Path p : gridModel.paths) {
+			LinkedList<SmartGridObject> powerLinesOnPath = p
+					.getPowerLinesOnPath();
+			if (powerLinesOnPath.size() != 1) {
+				System.err
+						.println("there are more or less then 1 PowerLines on the path !");
+			} else {
+				p.setResistance(powerLinesOnPath.get(0).getResistance());
+				p.setLineCharge(powerLinesOnPath.get(0).getLineCharge());
+			}
+		}
+	}
+
+	// /**
+	// * creates the admittance-matrix depending on the resistance of the single
+	// * power lines
+	// *
+	// * @param numberOfBuses
+	// * @return Matrix
+	// */
+	// private Matrix createAdmittanceMatrix(int numberOfBuses) {
+	// double[][] matrixValues = new double[numberOfBuses][numberOfBuses];
+	// for (int i = 0; i < numberOfBuses; i++) {
+	// for (int j = 0; j < numberOfBuses; j++) {
+	// matrixValues[i][j] = getMatrixValue(i, j, numberOfBuses,
+	// numberOfBuses);
+	// }
+	// }
+	// return new DenseMatrix(matrixValues);
+	// }
+
+	// /**
+	// * returns the value of the matrix on the position (x|y) the whole matrix
+	// * contains maxx values in x-direction and maxy values in y-direction
+	// *
+	// * @param x
+	// * @param y
+	// * @param maxx
+	// * @param maxy
+	// * @return d
+	// */
+	// private double getMatrixValue(int x, int y, int maxx, int maxy) {
+	// double d = 0;
+	// if (x == y) {// sum
+	// for (int i = 0; i < maxy; i++) {
+	// if (i == x)
+	// continue;
+	// d += getMatrixValue(x, i, maxx, maxy);
+	// }
+	// d = -d;
+	// } else {
+	// for (Path p : GlobalVariables.paths) {
+	// if ((p.getFirstBus().getNumber() == x || p.getSecondBus()
+	// .getNumber() == x)
+	// && (p.getFirstBus().getNumber() == y || p
+	// .getSecondBus().getNumber() == y)) {
+	// d = p.getAdmittance();
+	// d = -d;
+	// }
+	// }
+	// }
+	// return d;
+	// }
+
+	/**
+	 * This method returns an default vector with the size x
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public static Complex[] createDefaultVector(int x) {
+		Complex[] matrix = new Complex[x];
+		for (int i = 0; i < x; i++) {
+			matrix[i] = DEFAULT_VALUE;
+		}
+		return matrix;
+	}
+
+	// /**
+	// * creates the power vector that contains the power of the buses
+	// *
+	// * @param numberOfBuses
+	// * @return P
+	// */
+	// private DenseVector createPowerVector(int numberOfBuses) {
+	// int d[] = new int[numberOfBuses];
+	// for (int i = 0; i < GlobalVariables.buses.size(); i++) {
+	// d[i] = (int) GlobalVariables.buses.get(i).getNettoPower();
+	// }
+	// return new DenseVector(d);
+	// }
+
+	// /**
+	// * calculates the voltage vector
+	// *
+	// * @param Y
+	// * @param P
+	// * @return U
+	// */
+	// private DenseVector distributeVoltageJ(Matrix Y, Vector P) {//
+	// Problem gsProblem = new Problem(Y, P);
+	// Vector U = null;
+	//
+	// JacobiSolver gsSolver = new JacobiSolver();
+	//
+	// try {
+	// U = gsSolver.solve(gsProblem);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	//
+	// return new DenseVector(U);
+	// }
+
+	// //
+	// finishing---------------------------------------------------------------------
+	// public static void printMatrix(String name, Matrix M) {//
+	// System.out.format("matrix(%10s)-------------\n", name);
+	// for (int i = 1; i <= M.nRows(); i++) {
+	// for (int j = 1; j <= M.nCols(); j++) {
+	// System.out.format("|%20s|", M.get(i, j));
+	// }
+	// System.out.println("");
+	// }
+	// }
+	//
+	// public static void printVector(String name, Vector V) {//
+	// System.out.format("vector(%10s)-------------\n", name);
+	// for (int i = 1; i <= V.size(); i++) {
+	// System.out.format("|%20s|\n", V.get(i));
+	// }
+	// }
+
+	// -------------------------------------------------------------------------------------------
+
+	@Override
+	public LinkedHashMap<SmartGridObject, double[]> getTransactions() {
+		return null;
+	}
+
+	/**
+	 * writes a file based on the values the statKeeper contains
+	 */
+	@Override
+	public void writeToFile() {
+		// TODO: statKeeper doesn't contain useful values
+		statKeeper.saveResults(ControllerConstants.simResultPath);
+		statKeeper.clear();
+	}
+
+}

@@ -1,0 +1,13 @@
+The distribution Algorithm should solve two problems:
+  - Price Calculation
+  - Good/Efficient Distribution
+  
+If you aim for optimal price, you will encounter proplems with distribution (a city from far away wants cheap energy and congests the path, so that another city can't get energy at all anymore)
+If you aim for optimal distribution, price may vary extremly or extreme price differentials between regions would appear
+
+Suggestion:
+  - First take the unconditional Offers and aim for good distribution
+  - Second process the conditional Offers and aim more towards price
+
+If someone wants energy unconditionally he should be sure to get it.
+If someone wants energy only under a certain condition, make sure to reward him by a possible low price.

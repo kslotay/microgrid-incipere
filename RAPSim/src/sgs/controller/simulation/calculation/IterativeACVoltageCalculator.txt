@@ -1,0 +1,274 @@
+package sgs.controller.simulation.calculation;
+
+import java.util.LinkedList;
+
+import javax.swing.JOptionPane;
+
+import org.apache.commons.math3.complex.Complex;
+
+import sgs.controller.simulation.GlobalEnergyDistributionAlgorithm;
+import sgs.model.simulation.Bus;
+
+/**
+ * This class is used to calculate the alternating current (A.C.) voltage in the
+ * system with complex numbers.
+ * 
+ * @author Lukas Felician Krasel (praktikant 4)
+ */
+
+public class IterativeACVoltageCalculator {
+
+	//private final double DEFAULT_U_GEN = 1.05;
+	//private final double DEFAULT_U_LOAD = 1;
+
+	GlobalEnergyDistributionAlgorithm gEDA;
+
+	private Complex Y[][]; // admittance
+	private Complex P[]; // power
+	private Complex U[]; // voltage
+
+	private Bus.busTypes[] busTypes;
+
+	private int size;
+
+	private int swing_index = -1;
+
+	public static final double d2r = Math.PI / 180; // degree into radiant
+	public static final double w = 100 * Math.PI;
+
+	public IterativeACVoltageCalculator(GlobalEnergyDistributionAlgorithm gEDA) {
+		this.gEDA = gEDA;
+
+		Y = null;
+		P = null;
+		U = null;
+
+		busTypes = null;
+	}
+
+	public void solve() throws Exception {
+		// this method is written like this because of a model written in
+		// mathlab
+		this.size = busTypes.length;
+
+		// getting the index of the swing bus
+		
+		for (int i = 0; i < size; i++) {
+			if (busTypes[i] == Bus.busTypes.SWING_BUS) {
+				swing_index = i;
+				break;
+			} else if ( swing_index == i){
+				busTypes[i] = Bus.busTypes.SWING_BUS;
+			}
+				
+		}
+		
+	
+		
+		if (swing_index < 0) {
+			JOptionPane.showMessageDialog(null, "no swing bus selected",
+					"missing SWING_BUS", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		double[][] g = new double[size][size]; // real(Y)
+		double[][] b = new double[size][size]; // imaginary(Y)
+		double[] p = new double[size]; // real(P)
+		double[] q = new double[size]; // imaginary(P)
+		// double[] th = new double[size]; // angle
+		double[] mv = new double[size]; // |U|
+		for (int k=0;k<size;k++){
+			mv[k]=1;
+			}
+		Complex[] s = new Complex[size]; // P
+		Complex[] v = new Complex[size]; // U
+		
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				g[i][j] = Y[i][j].getReal();
+				b[i][j] = Y[i][j].getImaginary();
+			}
+			p[i] = P[i].getReal();
+			q[i] = P[i].getImaginary();
+			// th[i] = 0d;
+			mv[i] = (U[i]==null) ? 1 : U[i].abs();
+//			v[i] = new Complex(U[i].getReal(), 0d);
+			v[i] = (U[i]==null) ? new Complex(1,0) : U[i] ;
+		}
+
+		
+		
+		double del = 1;
+		int indx = 0;
+
+		Complex tmp1;
+		Complex tmp2;
+		Complex sm;
+		
+		double delp[] = new double[size];
+		double delq[] = new double[size];
+		double[] absDelPQ = new double[size+1];
+		LinkedList<Double> delpq = new LinkedList<Double>();
+		
+		// iterations
+		 while (del > 1e-6) { //iteration loop
+			 
+			// LOAD
+			for (int i = 0; i < size; i++) {
+				if (busTypes[i] != Bus.busTypes.LOAD_BUS)
+					continue;
+
+				tmp1 = Complex.valueOf(p[i], -q[i]);
+				tmp1 = tmp1.divide( v[i].conjugate() );
+				tmp2 = Complex.valueOf(0d, 0d);
+
+				for (int k = 0; k < size; k++) {
+					if (i == k)
+						continue;
+					
+					tmp2 = tmp2.add(Y[i][k].multiply(v[k]));
+				}
+
+				Complex vt = (tmp1.subtract(tmp2)).divide(Y[i][i]);
+				v[i] = vt;
+			}
+
+			// GENERATOR
+			for (int j = 0; j < size; j++) {
+				if (busTypes[j] != Bus.busTypes.GENERATOR_BUS)
+					continue;
+
+				tmp1 = Complex.valueOf(0d, 0d);
+
+				for (int i = 0; i < size; i++) {
+					tmp1 = tmp1.add(Y[j][i].multiply(v[i]));
+				}
+
+				double qj_imaginary = -(v[j].conjugate().multiply(tmp1)).getImaginary();
+
+				tmp1 = Complex.valueOf( p[j], -qj_imaginary );
+				tmp1 = tmp1.divide( v[j].conjugate() );
+				tmp2 = Complex.valueOf(0d, 0d);
+
+				for (int k = 0; k < size; k++) {
+					if (busTypes[k] == Bus.busTypes.GENERATOR_BUS)
+						continue;
+					tmp2 = tmp2.add(Y[j][k].multiply(v[k]));
+				}
+
+				Complex vt = (tmp1.subtract(tmp2)).divide(Y[j][j]);
+				double sc = v[j].abs() / vt.abs();
+//				Complex v2 = new Complex();
+
+				v[j] = Complex.valueOf(  vt.getReal()*sc, vt.getImaginary()*sc  );
+			}
+
+			// P-Q (S)
+			for (int i = 0; i < size; i++) {
+
+				sm = Complex.valueOf(0d, 0d);
+
+				for (int k = 0; k < size; k++) {
+					sm = sm.add(Y[i][k].multiply(v[k]));
+				}
+				
+				s[i] = v[i].conjugate().multiply(sm);
+			}
+
+			// mismatch
+
+			for (int i = 0; i < size; i++) {
+				delp[i] = p[i] - s[i].getReal();
+				delq[i] = q[i] + s[i].getImaginary();
+			}
+
+			delpq.clear();
+			
+			for (int i = 0; i < size; i++) {
+				if (busTypes[i] != Bus.busTypes.SWING_BUS) {
+					delpq.add(delp[i]);
+				}
+				if (busTypes[i] == Bus.busTypes.LOAD_BUS) {
+					delpq.add(delq[i]);
+				}
+			}
+			
+			for (int i = 0; i < delpq.size(); i++) {
+				absDelPQ[i] = Math.abs( delpq.get(i) );
+			}
+			del = max(absDelPQ);
+			
+			System.out.println( "Delta = "+ del );
+			
+			indx++;
+		}
+
+		System.out.println("iterations:      " + indx);
+		System.out.println("U:------------------");
+		for (int i = 0; i < size; i++) {
+			System.out.println(i + ": " + v[i].abs() );
+		}
+		System.out.println("S:------------------");
+		for (int i = 0; i < size; i++) {
+			System.out.println(i + ": " + s[i]);
+		}
+		
+//		writeback
+		this.setPowerVector(s);
+		this.setVoltageVector(v);
+		
+	}
+	
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	public void setAdmittanceMatrix(Complex[][] y) {
+		this.Y = y;
+	}
+
+	public void setPowerVector(Complex[] p) {
+		this.P = p;
+	}
+
+	public void setVoltageVector(Complex[] u) {
+		this.U = u;
+	}
+
+	public Complex[][] getAdmittanceMatrix() {
+		return Y;
+	}
+
+	public Complex[] getPowerVector() {
+		return P;
+	}
+
+	public Complex[] getVoltageVector() {
+		return U;
+	}
+
+	public void setBusTypes(Bus.busTypes[] bT) {
+		this.busTypes = bT;
+	}
+
+	public Bus.busTypes[] getBusTypes() {
+		return this.busTypes;
+	}
+
+	
+	/**
+	 * This method returns the maximum of the values that is the array
+	 * containing. This method doesn't uses negative values, so if there are
+	 * only negative values in the array, it returns 0.
+	 * 
+	 * @param array
+	 * @return the maximal number of the array
+	 */
+	public double max(double[] array) {
+		double tmp = 0d;
+		for (double d : array) {
+			if (tmp < d) {
+				tmp = d;
+			}
+		}
+		return tmp;
+	}
+}

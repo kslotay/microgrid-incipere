@@ -1,0 +1,403 @@
+> classToEnumMap:
+	SolarPowerPlant --> SOLAR_POWER_PLANT
+	WindTurbinePowerPlant --> WIND_TURBINE_POWER_PLANT
+	SuperConductor --> SPLINE
+	GeothermalPowerPlant --> GEO_THERMAL_POWER_PLANT
+	GridPower --> GRID_POWER
+	PowerLine --> PLINE
+	House --> HOUSE
+> classToNodeMap:
+	SolarPowerPlant --> [Node [SolarPowerPlant/SOLAR_POWER_PLANT, superClass=PowerPlant, subClasses=]]
+	WindTurbinePowerPlant --> [Node [WindTurbinePowerPlant/WIND_TURBINE_POWER_PLANT, superClass=PowerPlant, subClasses=]]
+	SuperConductor --> [Node [SuperConductor/SPLINE, superClass=PowerTransport, subClasses=]]
+	GeothermalPowerPlant --> [Node [GeothermalPowerPlant/GEO_THERMAL_POWER_PLANT, superClass=PowerPlant, subClasses=]]
+	ProSumer --> [Node [ProSumer/null, superClass=SmartGridObject, subClasses=House PowerPlant ]]
+	GridPower --> [Node [GridPower/GRID_POWER, superClass=PowerPlant, subClasses=]]
+	PowerLine --> [Node [PowerLine/PLINE, superClass=PowerTransport, subClasses=]]
+	PowerTransport --> [Node [PowerTransport/null, superClass=SmartGridObject, subClasses=PowerLine SuperConductor ]]
+	SolarPowerPlant_Simple --> [Node [SolarPowerPlant_Simple/null, superClass=PowerPlant, subClasses=]]
+	PowerPlant --> [Node [PowerPlant/null, superClass=ProSumer, subClasses=GeothermalPowerPlant GridPower SolarPowerPlant SolarPowerPlant_Simple WindTurbinePowerPlant ]]
+	SmartGridObject --> [Node [SmartGridObject/null, superClass=null, subClasses=PowerTransport ProSumer ]]
+	House --> [Node [House/HOUSE, superClass=ProSumer, subClasses=]]
+> JGridMap: 800/500 => 40/25
+> Enum 'MOVE_GEAR' has 1 images. 
+> Enum 'DELETE_GEAR' has 1 images. 
+> Enum 'PLINE' has 4 images. 
+> Enum 'SPLINE' has 12 images. 
+> Enum 'HOUSE' has 2 images. 
+> Enum 'SOLAR_POWER_PLANT' has 2 images. 
+> Enum 'WIND_TURBINE_POWER_PLANT' has 2 images. 
+> Enum 'GEO_THERMAL_POWER_PLANT' has 2 images. 
+> Enum 'GRID_POWER' has 2 images. 
+> > Algorithm constructed...
+> > Variables were set...
+> > initializeAlgorithm()
+-- createBusesAndFindPaths() --
+Paths after create: 
+> Algorithm changed: sgs.controller.simulation.SimplePowerDistribution@1ee7bff3
+> > Algorithm constructed...
+> > Algorithm constructed...
+-- createBusesAndFindPaths() --
+> Bus created: 0, [SuperConductor@14/7, SuperConductor@13/7, SuperConductor@12/7, House@11/7, SolarPowerPlant@15/7]
+Paths after create: 
+> airMass=1.108588596065374
+> intensity=1.0152536615407943,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 159,394701 deg, zenithAngle 25,590810 deg
+Calc 0 -----------------------------------------------------
+2013.07.10 - 12:30 (sunny): Bus0 netto production = 50761.68307703972
+--- Timethread milliseconds to sleep: -8249 --- 
+> airMass=1.1004259983598104
+> intensity=1.0171964279452088,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 170,097216 deg, zenithAngle 24,686938 deg
+Calc 1 -----------------------------------------------------
+2013.07.10 - 12:50 (sunny): Bus0 netto production = 50858.82139726044
+--- Timethread milliseconds to sleep: 4998 --- 
+--- ...milliseconds to sleep: -1645 --- 
+> airMass=1.098164197010874
+> intensity=1.0177362343359708,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 181,233844 deg, zenithAngle 24,428509 deg
+Calc 2 -----------------------------------------------------
+2013.07.10 - 13:10 (sunny): Bus0 netto production = 50885.81171679854
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=1.1017483563956603
+> intensity=1.0168811291688926,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 192,313074 deg, zenithAngle 24,836374 deg
+Calc 3 -----------------------------------------------------
+2013.07.10 - 13:30 (sunny): Bus0 netto production = 50843.05645844463
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.1112663836989896
+> intensity=1.0146181371715408,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 202,860675 deg, zenithAngle 25,878090 deg
+Calc 4 -----------------------------------------------------
+2013.07.10 - 13:50 (sunny): Bus0 netto production = 50729.906858577044
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.1269540342351547
+> intensity=1.0109127546694059,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 212,549349 deg, zenithAngle 27,479227 deg
+Calc 5 -----------------------------------------------------
+2013.07.10 - 14:10 (sunny): Bus0 netto production = 50544.63773347029
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=1.1492088301943113
+> intensity=1.0057075929407175,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 221,240940 deg, zenithAngle 29,545251 deg
+Calc 6 -----------------------------------------------------
+2013.07.10 - 14:30 (sunny): Bus0 netto production = 50284.37964703587
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.1786143315601976
+> intensity=0.9989200650491366,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 228,948172 deg, zenithAngle 31,981358 deg
+Calc 7 -----------------------------------------------------
+2013.07.10 - 14:50 (sunny): Bus0 netto production = 49945.00325245682
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.2159775634837615
+> intensity=0.9904389318925173,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 235,769392 deg, zenithAngle 34,703905 deg
+Calc 8 -----------------------------------------------------
+2013.07.10 - 15:10 (sunny): Bus0 netto production = 49520.946594625864
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.2623842054874785
+> intensity=0.9801194188953406,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 241,835208 deg, zenithAngle 37,644145 deg
+Calc 9 -----------------------------------------------------
+2013.07.10 - 15:30 (sunny): Bus0 netto production = 49004.97094476703
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=1.3192788970642368
+> intensity=0.9677764697260568,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 247,277120 deg, zenithAngle 40,747551 deg
+Calc 10 -----------------------------------------------------
+2013.07.10 - 15:50 (sunny): Bus0 netto production = 48387.82348630284
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.3885824233238395
+> intensity=0.9531754928781088,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 252,213359 deg, zenithAngle 43,971422 deg
+Calc 11 -----------------------------------------------------
+2013.07.10 - 16:10 (sunny): Bus0 netto production = 47657.77464390544
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=1.4728649056818313
+> intensity=0.9360196412047522,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 256,744664 deg, zenithAngle 47,282241 deg
+Calc 12 -----------------------------------------------------
+2013.07.10 - 16:30 (sunny): Bus0 netto production = 46799.982060237606
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.575606885813329
+> intensity=0.9159321781099888,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 260,954770 deg, zenithAngle 50,653356 deg
+Calc 13 -----------------------------------------------------
+2013.07.10 - 16:50 (sunny): Bus0 netto production = 45795.60890549944
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=1.701603207155813
+> intensity=0.892431716698445,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 264,912693 deg, zenithAngle 54,063145 deg
+Calc 14 -----------------------------------------------------
+2013.07.10 - 17:10 (sunny): Bus0 netto production = 44620.58583492225
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.857607942066295
+> intensity=0.8648968804925448,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 268,675381 deg, zenithAngle 57,493607 deg
+Calc 15 -----------------------------------------------------
+2013.07.10 - 17:30 (sunny): Bus0 netto production = 43243.844024627244
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=2.053404370594137
+> intensity=0.832514899290014,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 272,290185 deg, zenithAngle 60,929309 deg
+Calc 16 -----------------------------------------------------
+2013.07.10 - 17:50 (sunny): Bus0 netto production = 41624.7449645007
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=2.303663733126882
+> intensity=0.7942052635163459,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 275,796937 deg, zenithAngle 64,356587 deg
+Calc 17 -----------------------------------------------------
+2013.07.10 - 18:10 (sunny): Bus0 netto production = 39709.263175817294
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=2.6313596348792885
+> intensity=0.7485039286858675,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 279,229631 deg, zenithAngle 67,762945 deg
+Calc 18 -----------------------------------------------------
+2013.07.10 - 18:30 (sunny): Bus0 netto production = 37424.19643429338
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=3.074486764504911
+> intensity=0.6933846546895321,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 282,617742 deg, zenithAngle 71,136585 deg
+Calc 19 -----------------------------------------------------
+2013.07.10 - 18:50 (sunny): Bus0 netto production = 34668.23273447661
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=3.7004775641681533
+> intensity=0.6259828923544691,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 285,987253 deg, zenithAngle 74,466041 deg
+Calc 20 -----------------------------------------------------
+2013.07.10 - 19:10 (sunny): Bus0 netto production = 31298.144617723457
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=4.640801717869579
+> intensity=0.5421915438828053,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 289,361429 deg, zenithAngle 77,739875 deg
+Calc 21 -----------------------------------------------------
+2013.07.10 - 19:30 (sunny): Bus0 netto production = 27108.577194140264
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=6.187382069216568
+> intensity=0.4362400897647819,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 292,761390 deg, zenithAngle 80,946437 deg
+Calc 22 -----------------------------------------------------
+2013.07.10 - 19:50 (sunny): Bus0 netto production = 21811.004488239094
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=9.122118101627564
+> intensity=0.3014822971775494,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 296,206513 deg, zenithAngle 84,073655 deg
+Calc 23 -----------------------------------------------------
+2013.07.10 - 20:10 (sunny): Bus0 netto production = 15073.114858877469
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=16.172777535861727
+> intensity=0.14135436430371232,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 299,714675 deg, zenithAngle 87,108865 deg
+Calc 24 -----------------------------------------------------
+2013.07.10 - 20:30 (sunny): Bus0 netto production = 7066.718215185616
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=38.09674497201314
+> intensity=0.022131753639267816,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 303,302362 deg, zenithAngle 90,038675 deg
+Calc 25 -----------------------------------------------------
+2013.07.10 - 20:50 (sunny): Bus0 netto production = 1105.5876819633909
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=86.61475685794575
+> intensity=9.616826580419582E-4,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 306,984635 deg, zenithAngle 92,848865 deg
+Calc 26 -----------------------------------------------------
+2013.07.10 - 21:10 (sunny): Bus0 netto production = 47.08413290209791
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=145.82681387123853
+> intensity=4.283756143973534E-5,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 310,774960 deg, zenithAngle 95,524329 deg
+Calc 27 -----------------------------------------------------
+2013.07.10 - 21:30 (sunny): Bus0 netto production = 1.141878071986767
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=204.8959793618124
+> intensity=2.8461872099160823E-6,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 314,684907 deg, zenithAngle 98,049075 deg
+Calc 28 -----------------------------------------------------
+2013.07.10 - 21:50 (sunny): Bus0 netto production = -0.8576906395041959
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=260.8319531988633
+> intensity=2.7384540353511813E-7,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 318,723711 deg, zenithAngle 100,406300 deg
+Calc 29 -----------------------------------------------------
+2013.07.10 - 22:10 (sunny): Bus0 netto production = -0.9863077298232441
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=312.4661804759224
+> intensity=3.6314859138401494E-8,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 322,897725 deg, zenithAngle 102,578541 deg
+Calc 30 -----------------------------------------------------
+2013.07.10 - 22:30 (sunny): Bus0 netto production = -0.9981842570430799
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=359.1226840605442
+> intensity=6.409319137653625E-9,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 327,209802 deg, zenithAngle 104,547936 deg
+Calc 31 -----------------------------------------------------
+2013.07.10 - 22:50 (sunny): Bus0 netto production = -0.9996795340431173
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=400.31685387460766
+> intensity=1.4710512424430655E-9,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 331,658639 deg, zenithAngle 106,296598 deg
+Calc 32 -----------------------------------------------------
+2013.07.10 - 23:10 (sunny): Bus0 netto production = -0.9999264474378778
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=435.66804331085183
+> intensity=4.3236528945305136E-10,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 336,238206 deg, zenithAngle 107,807107 deg
+Calc 33 -----------------------------------------------------
+2013.07.10 - 23:30 (sunny): Bus0 netto production = -0.9999783817355273
+--- Timethread milliseconds to sleep: -3 --- 
+> airMass=464.86933960672354
+> intensity=1.6106566279924578E-10,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 340,937331 deg, zenithAngle 109,063099 deg
+Calc 34 -----------------------------------------------------
+2013.07.10 - 23:50 (sunny): Bus0 netto production = -0.9999919467168601
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=487.6759676748873
+> intensity=7.552291730329457E-11,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 345,739586 deg, zenithAngle 110,049941 deg
+Calc 35 -----------------------------------------------------
+2013.07.11 - 00:10 (sunny): Bus0 netto production = -0.9999962238541348
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=503.90064770861613
+> intensity=4.437034350372696E-11,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 350,623553 deg, zenithAngle 110,755418 deg
+Calc 36 -----------------------------------------------------
+2013.07.11 - 00:30 (sunny): Bus0 netto production = -0.9999977814828248
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=513.4117655839801
+> intensity=3.2568679245508134E-11,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 355,563561 deg, zenithAngle 111,170386 deg
+Calc 37 -----------------------------------------------------
+2013.07.11 - 00:50 (sunny): Bus0 netto production = -0.9999983715660378
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=516.1327079647385
+> intensity=2.9821499287376425E-11,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 0,530859 deg, zenithAngle 111,289298 deg
+Calc 38 -----------------------------------------------------
+2013.07.11 - 01:10 (sunny): Bus0 netto production = -0.9999985089250356
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=512.0416581917847
+> intensity=3.4048323618419784E-11,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 5,495153 deg, zenithAngle 111,110542 deg
+Calc 39 -----------------------------------------------------
+2013.07.11 - 01:30 (sunny): Bus0 netto production = -0.9999982975838191
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=501.1715599400934
+> intensity=4.8503885809379564E-11,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 10,426324 deg, zenithAngle 110,636543 deg
+Calc 40 -----------------------------------------------------
+2013.07.11 - 01:50 (sunny): Bus0 netto production = -0.9999975748057095
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=483.61017753486396
+> intensity=8.636699544971202E-11,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 15,296131 deg, zenithAngle 109,873611 deg
+Calc 41 -----------------------------------------------------
+2013.07.11 - 02:10 (sunny): Bus0 netto production = -0.9999956816502276
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=459.5003617024845
+> intensity=1.9283474746880133E-10,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 20,079681 deg, zenithAngle 108,831560 deg
+Calc 42 -----------------------------------------------------
+2013.07.11 - 02:30 (sunny): Bus0 netto production = -0.9999903582626266
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=429.04087437953467
+> intensity=5.42563548380858E-10,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 24,756526 deg, zenithAngle 107,523149 deg
+Calc 43 -----------------------------------------------------
+2013.07.11 - 02:50 (sunny): Bus0 netto production = -0.999972871822581
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=392.488605454492
+> intensity=1.938204068945801E-9,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 29,311294 deg, zenithAngle 105,963422 deg
+Calc 44 -----------------------------------------------------
+2013.07.11 - 03:10 (sunny): Bus0 netto production = -0.9999030897965527
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=350.1641497823488
+> intensity=8.889547249685532E-9,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 33,733879 deg, zenithAngle 104,169011 deg
+Calc 45 -----------------------------------------------------
+2013.07.11 - 03:30 (sunny): Bus0 netto production = -0.9995555226375157
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=302.4657903763559
+> intensity=5.32273922489023E-8,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 38,019254 deg, zenithAngle 102,157482 deg
+Calc 46 -----------------------------------------------------
+2013.07.11 - 03:50 (cloudy): Bus0 netto production = -0.9981370412712884
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=249.90652281727915
+> intensity=4.266720894477466E-7,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 42,167018 deg, zenithAngle 99,946757 deg
+Calc 47 -----------------------------------------------------
+2013.07.11 - 04:10 (cloudy): Bus0 netto production = -0.9850664768693289
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=193.22424840330535
+> intensity=4.755509086006118E-6,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 46,180793 deg, zenithAngle 97,554651 deg
+Calc 48 -----------------------------------------------------
+2013.07.11 - 04:30 (cloudy): Bus0 netto production = -0.8335571819897859
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=133.77896786462622
+> intensity=7.756977044491836E-5,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 50,067581 deg, zenithAngle 94,998519 deg
+Calc 49 -----------------------------------------------------
+2013.07.11 - 04:50 (cloudy): Bus0 netto production = 1.7149419655721423
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=75.39211938043266
+> intensity=0.0018597047464528615,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 53,837149 deg, zenithAngle 92,295021 deg
+Calc 50 -----------------------------------------------------
+2013.07.11 - 05:10 (cloudy): Bus0 netto production = 64.08966612585014
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=31.538677456766294
+> intensity=0.03670621070141841,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 57,501502 deg, zenithAngle 89,459983 deg
+Calc 51 -----------------------------------------------------
+2013.07.11 - 05:30 (cloudy): Bus0 netto production = 1283.7173745496443
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=14.116952144024083
+> intensity=0.17391440326892163,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 61,074476 deg, zenithAngle 86,508342 deg
+Calc 52 -----------------------------------------------------
+2013.07.11 - 05:50 (cloudy): Bus0 netto production = 6086.004114412257
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=8.346142814720451
+> intensity=0.33099704671067454,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 64,571460 deg, zenithAngle 83,454162 deg
+Calc 53 -----------------------------------------------------
+2013.07.11 - 06:10 (cloudy): Bus0 netto production = 11583.896634873608
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=5.8042237815206335
+> intensity=0.4595490495992707,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 68,009257 deg, zenithAngle 80,310697 deg
+Calc 54 -----------------------------------------------------
+2013.07.11 - 06:30 (cloudy): Bus0 netto production = 16083.216735974474
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=4.417435313217197
+> intensity=0.5605014956730542,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 71,406077 deg, zenithAngle 77,090501 deg
+Calc 55 -----------------------------------------------------
+2013.07.11 - 06:50 (cloudy): Bus0 netto production = 19616.552348556896
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=3.556014286686036
+> intensity=0.6405922572259924,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 74,781674 deg, zenithAngle 73,805571 deg
+Calc 56 -----------------------------------------------------
+2013.07.11 - 07:10 (cloudy): Bus0 netto production = 22419.729002909735
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=2.974360219184973
+> intensity=0.7052410909766511,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 78,157622 deg, zenithAngle 70,467529 deg
+Calc 57 -----------------------------------------------------
+2013.07.11 - 07:30 (cloudy): Bus0 netto production = 24682.438184182785
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=2.5585098293062174
+> intensity=0.7582672884440163,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 81,557748 deg, zenithAngle 67,087836 deg
+Calc 58 -----------------------------------------------------
+2013.07.11 - 07:50 (cloudy): Bus0 netto production = 26538.35509554057
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=2.2487547386973006
+> intensity=0.8023387187502337,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 85,008748 deg, zenithAngle 63,678044 deg
+Calc 59 -----------------------------------------------------
+2013.07.11 - 08:10 (cloudy): Bus0 netto production = 28080.855156258178
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=2.010918504125243
+> intensity=0.839350180892729,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 88,541002 deg, zenithAngle 60,250117 deg
+Calc 60 -----------------------------------------------------
+2013.07.11 - 08:30 (cloudy): Bus0 netto production = 29376.256331245513
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=1.8240854364149186
+> intensity=0.8706767374114007,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 92,189656 deg, zenithAngle 56,816815 deg
+Calc 61 -----------------------------------------------------
+2013.07.11 - 08:50 (cloudy): Bus0 netto production = 30472.685809399023
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.674771352737423
+> intensity=0.89733730834858,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 95,996008 deg, zenithAngle 53,392191 deg
+Calc 62 -----------------------------------------------------
+2013.07.11 - 09:10 (cloudy): Bus0 netto production = 31405.805792200303
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.5539162761687066
+> intensity=0.9201009967715111,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 100,009249 deg, zenithAngle 49,992231 deg
+Calc 63 -----------------------------------------------------
+2013.07.11 - 09:30 (cloudy): Bus0 netto production = 32202.534887002887
+--- Timethread milliseconds to sleep: -2 --- 
+> airMass=1.4552273373043931
+> intensity=0.9395574789180975,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 104,288613 deg, zenithAngle 46,635699 deg
+Calc 64 -----------------------------------------------------
+2013.07.11 - 09:50 (cloudy): Bus0 netto production = 32883.51176213341
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.3742153499873666
+> intensity=0.9561646010268018,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 108,905861 deg, zenithAngle 43,345262 deg
+Calc 65 -----------------------------------------------------
+2013.07.11 - 10:10 (cloudy): Bus0 netto production = 33464.76103593806
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.307609307508642
+> intensity=0.9702812314431102,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 113,947863 deg, zenithAngle 40,148978 deg
+Calc 66 -----------------------------------------------------
+2013.07.11 - 10:30 (cloudy): Bus0 netto production = 33958.84310050886
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.2529871983215344
+> intensity=0.9821903586766687,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 119,518542 deg, zenithAngle 37,082223 deg
+Calc 67 -----------------------------------------------------
+2013.07.11 - 10:50 (cloudy): Bus0 netto production = 34375.6625536834
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.2085360101038987
+> intensity=0.9921155870838801,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 125,738532 deg, zenithAngle 34,190077 deg
+Calc 68 -----------------------------------------------------
+2013.07.11 - 11:10 (cloudy): Bus0 netto production = 34723.0455479358
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.1728918268893267
+> intensity=1.0002330593576685,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 132,739186 deg, zenithAngle 31,529939 deg
+Calc 69 -----------------------------------------------------
+2013.07.11 - 11:30 (cloudy): Bus0 netto production = 35007.15707751839
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.1450313068567084
+> intensity=1.0066801360358244,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 140,645274 deg, zenithAngle 29,173641 deg
+Calc 70 -----------------------------------------------------
+2013.07.11 - 11:50 (cloudy): Bus0 netto production = 35232.80476125385
+--- Timethread milliseconds to sleep: -1 --- 
+> airMass=1.1241972242959264
+> intensity=1.011561717103943,   pos=46.6/14.4, height=0.0, squareMeters=50.0, azimuth 149,539266 deg, zenithAngle 27,207357 deg
+Calc 71 -----------------------------------------------------
+2013.07.11 - 12:10 (cloudy): Bus0 netto production = 35403.66009863801
+--- Timethread milliseconds to sleep: -1 --- 

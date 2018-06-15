@@ -1,0 +1,47 @@
+About Classes
+
+  GlobalVariables is a static class, that keeps track of important variables, objects and methods
+  ButtonManager, creates and initializes all Buttons and adds ActionListeners
+  MenuCreator, creates the menus in the top left of the application, it also contains the ActionListeners
+  GridMapListener handles all click and drag events, that come from jGridMap
+  FileManager is used to Load and Save Files (SafeSax is used for some XML parsing)
+  NetworkAnalyser creates Clusters and finds Paths between them (Preperation for Distribution Algorithms)
+  GridObject is an Object on the Grid (see also "About GridObject Inheritance.txt" for an oerview)
+
+  Offer, an Offer to buy (positive amount) or sell (negative amount) and amount to a certain price
+  ElectricyDistributionAlgorithm is used as a parentclass for future implementations of algorithms for the distribution of energy and calculation of price.
+   - LocalStockMarket is a simple (and not complete) example of an implementation. It tries to find a price like in a stockmarket. It only works within clusters.
+  Profile is used as a parentclass for future profiles. Profiles should contain a logic, by wich to create Offers.
+  
+  Cluster, everything that is connected except via PowerLine is a Cluster. PowerLines are not included in Clusters
+  Path one ore more PowerLines between two clusters
+
+  PropertiesDialog shows the properties of an object on the grid
+  SimOptionsJPanel shows the simulations-options before starting a simulation
+  SliderDialog appears to control the factor between realtime and simulated time
+
+Todo
+
+  Design improvements - Main Windows, Dialogs (+ find better way to Add Slider (sliderDialog) into UI)
+  Let Time run continuatly (atleast in realtime mode) --> adaption of TimeThread
+  No adding of Elements During Simulation!! (WhiteBoardListener + GridMap->ScrollMode=NoDrag)
+  Path, calculate decrement/maximal Energy
+  Addition of "unconditional" Offers (Price = 0). (maybe use PowerUsage for this)
+  Implementation of the function of Profile
+  ProfileID should be used to track diffrent Profiles/Profiles with diffrent Parameters (maybe in future visulised through diffrent colored houses)
+  Use Staatskeeper in each ProSumer to collect all simulation Data and Export it into a decent format
+  Realtime visualisation of Simulation Data (total energy consumption, average current price, total energy production, total energy offerings, total energy requests, percentage of fulfillment for users). possibility to visulize more than one curve; ability to zoom in.
+  Add Other Overlays (PowerLine CurrentCharge, Absolute EnergyConsumtion/Production)
+  Make the simulator accecible via CommandLine (1st Step, Main & GlobalVariables.. 2nd Step, ActionListeners)
+  Create a natwork-generator (for example insert part of city with n consumers)
+  Implement an interface to take weathercoditions into acount (sunrise, sundown, average amount of rain etc.)
+  File->Options and save options as options.zip
+  The ability to globaly set Locale, so that time goes as the user is used to.
+
+Notes
+
+  Add more inline Comments
+  Java Naming Convention is not fullfilled in some parts
+  Overlay Color-Generation slow (GlobalVariables.setData()), possible solution: "static" 50 colors (addColorToScale) for a 2% resolution
+
+

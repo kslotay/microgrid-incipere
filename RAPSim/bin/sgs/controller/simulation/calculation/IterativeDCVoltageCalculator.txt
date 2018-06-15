@@ -1,0 +1,160 @@
+package sgs.controller.simulation.calculation;
+
+import java.util.Vector;
+
+import sgs.controller.simulation.ACPowerFlowCalculator;
+import sgs.model.simulation.Bus;
+import Jama.Matrix;
+
+/**
+ * This class is used to calculate the direct current (D.C.) voltage of the
+ * system without complex values.
+ * 
+ * @author Lukas Felician Krasel (praktikant 4)
+ */
+
+public class IterativeDCVoltageCalculator {
+
+	//private final double DEFAULT_U_GEN = 1.05;
+	//private final double DEFAULT_U_LOAD = 1;
+
+	ACPowerFlowCalculator gEDA;
+
+	private Matrix Y; // admittance
+	private Vector<Double> P; // power
+	private Vector<Double> U; // voltage
+
+	private Bus.busTypes[] busTypes;
+
+	private int iteration;
+	private final int DEFAULT_ITERATIONS = 1000;
+
+	private int size;
+
+	public IterativeDCVoltageCalculator(ACPowerFlowCalculator gEDA) {
+		this.gEDA = gEDA;
+
+		Y = null;
+		P = null;
+		U = null;
+
+		busTypes = null;
+
+		iteration = DEFAULT_ITERATIONS;
+	}
+
+	public void solve() throws Exception {
+		// test matrix & vectors on their correctness
+		test();
+
+		// set default values of P
+		double P_default = 0;
+		for (int j = 1; j <= size; j++) {
+			P_default += P.get(j);
+		}
+		// P_default = P_default / size;
+		for (int i = 1; i <= size; i++) {
+			if (busTypes[i - 1] == Bus.busTypes.SWING_BUS) {
+				P.set(i, -P_default);
+			}
+		}
+
+		for (int k = 0; k < iteration; k++) {
+			// calculate & set the U,P(k = 0) values
+			for (int i = 1; i <= size; i++) {
+				if (busTypes[i - 1] != Bus.busTypes.LOAD_BUS)
+					continue;
+				double U_new = U.get(i);
+				//double P_new = P.get(i);
+
+				// calculates the sum
+				double sum = 0;
+				for (int j = 1; j <= size; j++) {
+					if (i == j)
+						continue;
+					sum += (Y.get(i, j) * U.get(j));
+				}
+
+				// calculate the new U, P(k + 1)
+				U_new = (1 / Y.get(i, i)) * ((P.get(i) / U.get(i)) - sum);
+				U.set(i, U_new);
+			}
+
+			// SWING_BUS
+			for (int i = 1; i <= size; i++) {
+				if (busTypes[i - 1] != Bus.busTypes.SWING_BUS)
+					continue;
+				//double U_new = U.get(i);
+				double P_new = P.get(i);
+
+				// calculates the sum
+				double sum = 0;
+				for (int j = 1; j <= size; j++) {
+					if (i == j)
+						continue;
+					sum += (Y.get(i, j) * U.get(j));
+				}
+
+				// calculate the new U, P(k + 1)
+				P_new = (U.get(i) * (Y.get(i, i) * U.get(i) + sum));
+				P.set(i, P_new);
+				break;
+			}
+		}
+	}
+
+	public void setAdmittanceMatrix(Matrix Y) {
+		this.Y = Y;
+	}
+
+	public void setPowerVector(Vector<Double> P) {
+		this.P = P;
+	}
+
+	public void setVoltageVector(Vector<Double> U) {
+		this.U = U;
+	}
+
+	public Matrix getAdmittanceMatrix() {
+		return Y;
+	}
+
+	public Vector<Double> getPowerVector() {
+		return P;
+	}
+
+	public Vector<Double> getVoltageVector() {
+		return U;
+	}
+
+	public void setBusTypes(Bus.busTypes[] bT) {
+		this.busTypes = bT;
+	}
+
+	public Bus.busTypes[] getBusTypes() {
+		return this.busTypes;
+	}
+
+	public void setIterations(int i) {
+		iteration = i;
+	}
+
+	public long getIterations() {
+		return iteration;
+	}
+
+	private void test() throws Exception {
+		if (Y == null || P == null || U == null || busTypes == null) {
+			throw new Exception("a matrix or vector is null");
+		}
+		if (Y.getColumnDimension() != Y.getRowDimension()) {
+			throw new Exception("Y is not a square");
+		}
+		if (U.size() != P.size() || P.size() != Y.getColumnDimension()
+				|| U.size() != Y.getRowDimension()) {
+			throw new Exception(
+					"the matrix and vectors do not have the same dimension");
+		}
+		this.size = U.size();
+	}
+}

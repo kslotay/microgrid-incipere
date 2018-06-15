@@ -1,0 +1,146 @@
+package sgs.controller.simulation;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.LinkedList;
+
+import org.apache.commons.math3.complex.Complex;
+
+import sgs.controller.simulation.calculation.AdmittanceList;
+import sgs.model.simulation.Bus;
+import sgs.model.simulation.Bus.busTypes;
+
+/**
+ * Reading interface from a *.csv file to load values. 
+ * 
+ * @author Lukas Felician Krasel (praktikant 4)
+ *
+ */
+
+public class YPFileManager {
+
+	FileReader fr = null;
+	BufferedReader br = null;
+
+	AdmittanceList aL;
+
+	Complex[][] Y;
+	Complex[] P;
+	Complex[] U;
+	Bus.busTypes bT[];
+
+	private int size = 0;
+
+	public YPFileManager(String filename, AdmittanceList aL) {
+		this.aL = aL;
+		load(filename);
+	}
+
+	public void load(String filename) {
+		try {
+			fr = new FileReader(filename);
+			br = new BufferedReader(fr);
+
+			String line = null;
+			// R prepare; input R is later formed into Y
+			while (!(line = br.readLine()).equals("")) {
+				String[] splittedLine = line.split("\t");
+				double i = 0.0;
+				double lC = 0.0;
+				if (splittedLine.length == 5) {
+					i = Double.parseDouble(splittedLine[3]);
+					lC = Double.parseDouble(splittedLine[4]);
+				}
+				aL.add(Integer.parseInt(splittedLine[0]),
+						Integer.parseInt(splittedLine[1]),
+						Double.parseDouble(splittedLine[2]), i, lC);
+			}
+
+			// P
+			LinkedList<String> lls = new LinkedList<String>();
+			while (!(line = br.readLine()).equals("")) {
+				lls.add(line);
+			}
+			size = lls.size();
+			P = new Complex[size];
+			for (int i = 0; i < size; i++) {
+				String[] splittedLine = lls.get(i).split("\t");
+				double tmp = 0d;
+				if (splittedLine.length == 2) {
+					tmp = Double.parseDouble(splittedLine[1]);
+				}
+				P[i] = new Complex(Double.parseDouble(splittedLine[0]), tmp);
+			}
+
+			// Y is created here
+			this.Y = aL.createAdmittanceMatrix();
+
+			// typesOfBuses
+			bT = new Bus.busTypes[lls.size()];
+			for (int i = 0; i < size; i++) {
+				line = br.readLine();
+				bT[i] = typesOfBuses.fromString(line);
+			}
+
+			// U
+			line = br.readLine();
+			U = new Complex[size];
+			line = br.readLine();
+			if (line == null) {
+				U = GlobalEnergyDistributionAlgorithm.createDefaultVector(size);
+			} else {
+				for (int i = 0; i < size; i++) {
+					U[i] = new Complex(Double.parseDouble(line), 0d);
+					line = br.readLine();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Complex[][] getY() {
+		return Y;
+	}
+
+	public Complex[] getP() {
+		return P;
+	}
+
+	public Complex[] getU() {
+		return U;
+	}
+
+	public Bus.busTypes[] getBusTypes() {
+		return bT;
+	}
+
+	public int size() {
+		return size;
+	}
+
+	public void printData() {
+		System.out.format("matrix(%10s)-------------\n", "Y_in");
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < Y.length; j++) {
+				System.out.format("|%20s|", Y[i][j]);
+			}
+			System.out.println("");
+		}
+
+		System.out.format("vector(%10s)-------------\n", "P_in");
+		for (int i = 0; i < size; i++) {
+			System.out.format("|%20s|\n", P[i]);
+		}
+
+		System.out.format("vector(%10s)-------------\n", "U_in");
+		for (int i = 0; i < size; i++) {
+			System.out.format("|%20s|\n", U[i]);
+		}
+
+		System.out.format("vector(%10s)-------------\n", "typesOfBuses");
+		for (int i = 0; i < size; i++) {
+			System.out.format("|%20s|\n", bT[i]);
+		}
+	}
+}

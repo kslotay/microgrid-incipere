@@ -1,0 +1,236 @@
+/*package sgs.controller.simulation;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+
+import main.StatKeeper;
+
+import sgs.GlobalVariables;
+import sgs.controller.GridController;
+import sgs.model.GridModel;
+import sgs.model.simulation.Cluster;
+import sgs.model.simulation.Offer;
+import sgs.model.simulationObjects.House;
+import sgs.model.simulationObjects.PowerPlant;
+import sgs.model.simulationObjects.ProSumer;
+import sgs.model.simulationObjects.SmartSimObject;
+
+
+/**
+ *
+ * @author Tobi
+ *
+public class LocalStockMarket extends AbsElectricyDistributionAlgorithm {
+
+    private LinkedHashMap<SmartSimObject, double[]> data = new LinkedHashMap<>();
+
+	private GridController gridController;
+	private GridModel gridModel;
+	
+	private StatKeeper statKeeper;
+	
+	public LocalStockMarket(GridController gridController){
+		this.gridController = gridController;
+		this.gridModel = gridController.getModel();
+		
+		statKeeper = new StatKeeper();
+	}
+	
+	
+    /**
+     * 
+     *
+    @Override
+    public void init() {
+        name = "Local Stock Market";
+        description = "Within a Cluster the price is determind like in a Stock Market.";
+    }
+
+    @Override
+    public void Calc() {
+    	System.out.println("Calc()----------------------------------------------------------------------");
+        for (SmartSimObject o : gridModel.gridObjectList) {
+            o.resetCurrentCharge();
+        }
+        LinkedList<LinkedList<Offer>> clusterOffers = new LinkedList<>();
+        for (Cluster c : GlobalVariables.clusters) {
+            try {
+                clusterOffers.add(distributeEnergyInCluster(c));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        gridController.repaintData();
+    }
+
+    private LinkedList<Offer> distributeEnergyInCluster(Cluster c) throws Exception {
+    	System.out.println("dEIC()--------------------------------------------");
+        ArrayList<Double> prices = new ArrayList<>();
+        
+        System.out.println("p-restrictions--------");
+        //What price restrictions do exist
+        for (SmartSimObject object : c.getObjects()) {
+            if (object instanceof ProSumer) {
+                ProSumer pros = (ProSumer) object;
+                for (Offer offer : pros.getOffers()) {
+                    prices.add(offer.getPrice());
+                    System.out.println("p: " + offer.getPrice());
+                }
+            }
+        }
+
+        if (prices.isEmpty()) {
+            return null;
+        }
+        
+        System.out.println("price-level-----------");
+        //At what price-level does the most Trade happen
+        double sell = 0;
+        double buy = 0;
+        double max = Double.MIN_VALUE;
+        int index = 0;
+        int i = 0;
+        for (Double price : prices) {
+            sell = 0;
+            buy = 0;
+            for (SmartSimObject object : c.getObjects()) {
+                if (object instanceof ProSumer) {
+                    ProSumer pros = (ProSumer) object;
+                    for (Offer offer : pros.getOffers()) {
+                        if (offer.getAmount() < 0) {
+                            if (offer.getPrice() <= price) {
+                                sell += offer.getAmount();
+                            }
+                        } else if (offer.getAmount() > 0) {
+                            if (offer.getPrice() >= price) {
+                                buy += offer.getAmount();
+                            }
+                        }
+                    }
+                }
+            }
+            if (max < Math.min(buy, Math.abs(sell))) {
+                max = Math.min(buy, Math.abs(sell));
+                index = i;
+            }
+            i++;
+            System.out.println("s: " + sell +
+            		" \tb: " + buy);
+        }
+        
+        
+        System.out.println("sold/bought-----------");
+        //How much is sold/bought
+        double price = prices.get(index);
+        prices = null;
+        ArrayList<Double> transactions = new ArrayList<>();
+        LinkedList<LinkedList<Offer>> offers = new LinkedList<>();
+        LinkedList<Offer> offersLeft = new LinkedList<>();
+        sell = 0;
+        buy = 0;
+        double buySell = 0;
+        int sellers = 0;
+        for (SmartSimObject object : c.getObjects()) {
+            buySell = 0;
+            offers.add(new LinkedList<Offer>());
+            if (object instanceof ProSumer) {
+                ProSumer pros = (ProSumer) object;
+                for (Offer offer : pros.getOffers()) {
+                    if (offer.getAmount() < 0) {
+                        offers.getLast().add(offer);
+                        if (offer.getPrice() <= price) {
+                            sell += offer.getAmount();
+                            buySell += offer.getAmount();
+                        } else {
+                            offersLeft.add(offer);
+                        }
+                    } else if (offer.getAmount() > 0) {
+                        if (offer.getPrice() >= price) {
+                            buy += offer.getAmount();
+                            buySell += offer.getAmount();
+                        } else {
+                            offersLeft.add(offer);
+                        }
+                    }
+                }
+                if (pros instanceof PowerPlant) {
+                    if (buySell < (0 - pros.getPowerProduction())) {
+                        throw new Exception("Not so much Energy");
+                    }
+                    if (buySell > 0) {
+                        throw new Exception("I'm a PowerPlant... I don't buy Energy, I sell it =S ");
+                    }
+                } else if (pros instanceof House) {
+                    if (buySell > pros.getPowerDemand()) {
+                        throw new Exception("I can't buy more than I need");
+                    }
+                }
+            }
+            transactions.add(buySell);
+            if (buySell < 0) {
+                sellers++;
+            }
+            
+            System.out.println("sellers: " + sellers +
+            		" \tbs: " + buySell +
+            		" \ts: " + sell +
+            		" \tb: " + buy);
+        }
+        offers = null;
+        
+        double unbalance = sell + buy;
+        
+        System.out.println("u: " + unbalance);
+        
+        if (unbalance > 0) {
+        	System.err.println("A Home doesn't get enought Energy from this cluster");
+            //throw new Exception("A Home doesn't get enough Energy");
+        }
+        unbalance = Math.abs(unbalance);
+        if (sellers != 0) {
+            unbalance = unbalance / sellers;
+        } else {
+            ///??
+        }
+        
+        System.out.println("transactions----------");
+        //transactions
+        for (int j = 0; j < transactions.size(); j++) {
+        	if(transactions.get(j) != 0)
+        	{
+        		System.out.println("t: " + transactions.get(j));
+        		statKeeper.add(transactions.get(j));
+        	}
+            if (transactions.get(j) < 0) {
+                double selled = transactions.get(j) + unbalance;
+                offersLeft.add(new Offer(price, (0 - unbalance), c.getObjects().get(j), c));
+                double temp[] = {selled, price};
+                data.put(c.getObjects().get(j), temp);
+                c.getObjects().get(j).setCurrentCharge(c.getObjects().get(j).getPowerProduction() + selled);
+            } else if (transactions.get(j) > 0) {
+                double temp[] = {transactions.get(j), price};
+                data.put(c.getObjects().get(j), temp);
+                c.getObjects().get(j).setCurrentCharge(transactions.get(j));
+            } else {
+                c.getObjects().get(j).resetCurrentCharge();
+            }
+        }
+        
+        //return the unfullfilled Offers to look for energy in the other clusters
+        return offersLeft;
+    }
+    
+    
+    @Override
+    public LinkedHashMap<SmartSimObject, double[]> getTransactions() {
+        return data;
+    }
+    
+    @Override
+    public void writeToFile()
+    {
+    	statKeeper.saveResults(GlobalVariables.simResultPath);
+    	statKeeper.clear();
+    }
+}*/

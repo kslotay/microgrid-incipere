@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="utils"/>
+	<classpathentry kind="lib" path="Lib/commons-math3-3.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/JGridMap"/>
+	<classpathentry kind="lib" path="Lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="Lib/Jama-1.0.2.jar"/>
+	<classpathentry kind="lib" path="Lib/jcalendar-1.4.jar"/>
+	<classpathentry kind="lib" path="Lib/Statskeeper.jar"/>
+	<classpathentry kind="lib" path="Lib/jgoodies-forms-1.7.1.jar"/>
+	<classpathentry kind="lib" path="Lib/jgoodies-common-1.6.0.jar"/>
+	<classpathentry kind="lib" path="Lib/javacsv.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="Lib/jfxrt_8.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

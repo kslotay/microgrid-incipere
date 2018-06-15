@@ -1,0 +1,7 @@
+[18:21:11] Kristofer S: Wie ist das jetzt genau mit der Vorlesung? Was planst du zu machen? Was brauchst du dafür?
+[18:26:00] Wilfried Elmenreich: Idealerweise sollten die Studierenden folgendes machen:
+ - Simulator herunterladen und installieren gemäß Anleitung
+ - Starten, zusammenklicken einer einfachen Simulation, aufnehmen/exportieren von Daten
+ - Importieren des Projekts in Eclipse, Erweitern einer Komponente gemäß eines Tutorials
+ - Simulation mit selbstprogrammierter Komponente zusammenstellen, starten, aufnehmen/exportieren von Daten
+ - Einbinden der Ergebnisse in einen Bericht

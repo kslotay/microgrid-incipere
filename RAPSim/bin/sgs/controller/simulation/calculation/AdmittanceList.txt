@@ -1,0 +1,374 @@
+package sgs.controller.simulation.calculation;
+
+import java.util.LinkedList;
+
+import org.apache.commons.math3.complex.Complex;
+
+import sgs.model.SgsGridModel;
+import sgs.model.simulation.Path;
+
+
+
+/**
+ * List to save data concerning the admittance. 
+ * 
+ * @author Lukas Felician Krasel (praktikant 4)
+ *
+ */
+
+public class AdmittanceList {
+	private LinkedList<Integer> fromBus;
+	private LinkedList<Integer> toBus;
+	private LinkedList<Double> resistance;
+	private LinkedList<Double> reactance;
+	private LinkedList<Double> susceptance;
+
+	public AdmittanceList() {
+		fromBus = new LinkedList<Integer>();
+		toBus = new LinkedList<Integer>();
+		resistance = new LinkedList<Double>(); // resistance real
+		reactance = new LinkedList<Double>(); // resistance imaginary
+		susceptance = new LinkedList<Double>();
+	}
+	
+	public AdmittanceList( LinkedList<Path> branchList ) {
+		this();
+
+		for (Path pa : branchList ){
+			int lowerBus =  pa.getFirstBus().getNumber();
+			int higherBus = pa.getSecondBus().getNumber();
+			if (lowerBus>higherBus){
+				lowerBus = higherBus;
+				higherBus = pa.getFirstBus().getNumber();
+			}
+			this.add( lowerBus, higherBus ,  pa.getResistance(), pa.getLineCharge() );
+		}
+		this.sort();
+	}
+	
+	
+
+	/**
+	 * returns the first Bus number of the line
+	 * 
+	 * @param line
+	 * @return firstI(line)
+	 */
+	public int getFirstBus(int line) {
+		return fromBus.get(line);
+	}
+
+	/**
+	 * returns the second Bus number of the line
+	 * 
+	 * @param line
+	 * @return secondI(line)
+	 */
+	public int getSecondBus(int line) {
+		return toBus.get(line);
+	}
+
+	/**
+	 * returns the real component of the resistance in the line
+	 * 
+	 * @param line
+	 * @return value(line)
+	 */
+	public double getRealValue(int line) {
+		return resistance.get(line);
+	}
+
+	/**
+	 * returns the lineCharging value of the line
+	 * 
+	 * @param line
+	 * @return lineCharging(line)
+	 */
+	public double getSusceptance(int line) {
+		return susceptance.get(line);
+	}
+
+	/**
+	 * returns the imaginary component of the resistance in the line
+	 * 
+	 * @param line
+	 * @return
+	 */
+	public double getImaginaryValue(int line) {
+		return reactance.get(line);
+	}
+
+	/**
+	 * returns the resistance in the line as a complex number
+	 * 
+	 * @param line
+	 * @return
+	 */
+	public Complex getResistance(int line) {
+		return new Complex(resistance.get(line), reactance.get(line));
+	}
+
+	/**
+	 * adds a new line to the admittance list; the values imaginary and
+	 * lineCharging are 0d
+	 * 
+	 * @param bus1
+	 * @param bus2
+	 * @param value
+	 */
+	public void add(int bus1, int bus2, double value) {
+		this.add(bus1, bus2, value, 0d, 0d);
+	}
+
+	/**
+	 * @param bus1
+	 * @param bus2
+	 * @param resistance
+	 * @param lineCharging
+	 */
+	public void add(int bus1, int bus2, Complex resistance, double lineCharging) {
+		this.add(bus1, bus2, resistance.getReal(), resistance.getImaginary(),
+				lineCharging);
+	}
+
+	/**
+	 * adds a new line to the admittance list
+	 * 
+	 * @param bus1
+	 * @param bus2
+	 * @param real
+	 * @param imaginary
+	 * @param lineCharging
+	 */
+	public void add(int bus1, int bus2, double real, double imaginary,
+			double lineCharging) {
+		fromBus.add(bus1);
+		toBus.add(bus2);
+		resistance.add(real);
+		reactance.add(imaginary);
+		susceptance.add(lineCharging);
+	}
+
+	/**
+	 * returns the size of the admittance list
+	 * 
+	 * @return size
+	 */
+	public int size() {
+		return resistance.size();
+	}
+
+	/**
+	 * fills the values from the paths into the list
+	 */
+//	public void getValuesFromPaths() {
+//		this.clear();
+//		for (Path p : SgsGridModel.paths) {
+//			if (p.getFirstBus().getNumber() < p.getSecondBus().getNumber())
+//				this.add(p.getFirstBus().getNumber(), p.getSecondBus()
+//						.getNumber(), p.getResistance(), p.getLineCharge());
+//			else
+//				this.add(p.getSecondBus().getNumber(), p.getFirstBus()
+//						.getNumber(), p.getResistance(), p.getLineCharge());
+//		}
+//	}
+
+	/**
+	 * creates the admittance-matrix the values from the list are the resistance
+	 * values, not the admittance values
+	 * 
+	 * @param numberOfBuses
+	 * @return Matrix
+	 */    // first Version by Lukas
+	public Complex[][] createAdmittanceMatrix(int numberOfBuses) {
+				
+		Complex[][] zz = new Complex[numberOfBuses][numberOfBuses]; // the
+																	// resistance
+																	// value
+																	// matrix
+		Complex[][] ych = new Complex[numberOfBuses][numberOfBuses]; // the line
+																		// charging
+																		// matrix
+		Complex[][] yb = new Complex[numberOfBuses][numberOfBuses]; // the Y
+																	// matrix
+
+		// creating ych
+		for (int i = 0; i < numberOfBuses; i++) {
+			for (int j = 0; j < numberOfBuses; j++) {
+				double v = 0.0;
+				// getting lineCharging values from the list
+				for (int k = 0; k < size(); k++) {
+					if ((getFirstBus(k) == i && getSecondBus(k) == j)
+							|| getFirstBus(k) == j && getSecondBus(k) == i) {
+						v = getSusceptance(k);
+					}
+				}
+				ych[i][j] = new Complex(0, v);
+			}	
+		}
+		// creating zz
+		for (int i = 0; i < numberOfBuses; i++) {
+			for (int j = 0; j < numberOfBuses; j++) {
+				if (i == j) {
+					zz[i][j] = new Complex(0d, 0d);
+					continue;
+				}
+				zz[i][j] = getZZValue(i, j);
+			}
+		}
+		// creating yb
+		for (int i = 0; i < numberOfBuses; i++) {
+			for (int j = 0; j < numberOfBuses; j++) {
+				if (zz[i][j].equals(new Complex(0d, 0d))) {
+					yb[i][j] = new Complex(0d, 0d);
+				} else {
+					yb[i][j] = new Complex(-1.0, 0.0).divide(zz[i][j]);
+				}
+			}
+		}
+		// diagonal of yb
+		for (int i = 0; i < numberOfBuses; i++) {
+			Complex csum = new Complex(0, 0);
+			Complex ysum = new Complex(0, 0);
+			for (int j = 0; j < numberOfBuses; j++) {
+				ysum = ysum.add(yb[i][j]);
+				csum = csum.add(ych[i][j]);
+			}
+			yb[i][i] = csum.subtract(ysum);
+		}
+		return yb;
+	}
+	
+
+	public Complex[][] createAdmittanceMatrix() {
+		int numberOfBuses = SgsGridModel.buses.size();
+		Complex[][] y = new Complex[numberOfBuses][numberOfBuses];
+		
+		y =  createAdmittanceMatrix(numberOfBuses);
+//	}
+		
+		return y;
+	}
+
+	
+	/**
+	 * returns the value of the zz matrix on the position (x|y)
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	private Complex getZZValue(int x, int y) {
+		Complex d = new Complex(0, 0);
+		for (int i = 0; i < size(); i++) {
+			if ((x == fromBus.get(i) && y == toBus.get(i))
+					|| (y == fromBus.get(i) && x == toBus.get(i))) {
+				d = new Complex(resistance.get(i), reactance.get(i));
+			}
+		}
+		return d;
+	}
+
+	/**
+	 * clears the list
+	 */
+	public void clear() {
+		fromBus.clear();
+		toBus.clear();
+		resistance.clear();
+		susceptance.clear();
+	}
+
+	/**
+	 * orders the list that the bus1 with the smallest index is on the top
+	 */
+	public void sort() {
+		int changes = size();
+		while (changes > 0) {
+			changes = 0;
+			for (int i = 0; i < size() - 1; i++) {
+				if (fromBus.get(i) > fromBus.get(i + 1)) {
+					int tmp1 = fromBus.get(i + 1);
+					int tmp2 = toBus.get(i + 1);
+					double tmp3 = resistance.get(i + 1);
+					double tmp4 = reactance.get(i + 1);
+					double tmp5 = susceptance.get(i + 1);
+					this.setLine(i + 1, fromBus.get(i), toBus.get(i),
+							resistance.get(i), reactance.get(i),
+							susceptance.get(i));
+					this.setLine(i, tmp1, tmp2, tmp3, tmp4, tmp5);
+					changes++;
+				} else if (fromBus.get(i) == fromBus.get(i + 1)
+						&& toBus.get(i) > toBus.get(i + 1)) {
+					int tmp1 = fromBus.get(i + 1);
+					int tmp2 = toBus.get(i + 1);
+					double tmp3 = resistance.get(i + 1);
+					double tmp4 = reactance.get(i + 1);
+					double tmp5 = susceptance.get(i + 1);
+					this.setLine(i + 1, fromBus.get(i), toBus.get(i),
+							resistance.get(i), reactance.get(i),
+							susceptance.get(i));
+					this.setLine(i, tmp1, tmp2, tmp3, tmp4, tmp5);
+					changes++;
+				}
+			}
+		}
+	}
+
+	/**
+	 * sets the line index of the list; the imaginary and the line charging
+	 * value are 0d, it calls the longer method
+	 * 
+	 * @param index
+	 * @param bus1
+	 * @param bus2
+	 * @param value
+	 */
+	public void setLine(int index, int bus1, int bus2, double value) {
+		this.setLine(index, bus1, bus2, value, 0d, 0d);
+	}
+
+	/**
+	 * 
+	 * @param index
+	 * @param bus1
+	 * @param bus2
+	 * @param resitstance
+	 * @param lineCharging
+	 */
+	public void setLine(int index, int bus1, int bus2, Complex resitstance,
+			double lineCharging) {
+		this.setLine(index, bus1, bus2, resitstance.getReal(),
+				resitstance.getImaginary(), lineCharging);
+	}
+
+	/**
+	 * sets the line index of the list
+	 * 
+	 * @param index
+	 * @param bus1
+	 * @param bus2
+	 * @param real
+	 * @param imaginary
+	 * @param lineCharging
+	 */
+	public void setLine(int index, int bus1, int bus2, double real,
+			double imaginary, double lineCharging) {
+		fromBus.set(index, bus1);
+		toBus.set(index, bus2);
+		resistance.set(index, real);
+		reactance.set(index, imaginary);
+		susceptance.set(index, lineCharging);
+	}
+
+	/**
+	 * returns the line index of the list as a String[]
+	 * 
+	 * @param index
+	 * @return one line of the list
+	 */
+	public String[] getLine(int index) {
+		return new String[] { fromBus.get(index) + "", toBus.get(index) + "",
+				resistance.get(index) + "", reactance.get(index) + "",
+				susceptance.get(index) + "" };
+	}
+}
