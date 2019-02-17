@@ -5,4 +5,4 @@ Decentralized Energy Resource Management using Ethereum
 
 # Requirements (as developed)
 
-Truffle, truffle-contract, Ganache (for testrpc), npm
+Truffle, truffle-contract, Ganache (for testrpc), Node.js
